@@ -10,7 +10,7 @@ public interface IAccountRepository
     Task<LoginResponse> LoginAccountAsync(LoginDto model);
     Task<GeneralResponse> CreateAccountAsync(CreateAccountDto model);
     Task<LoginResponse> RefreshTokenAsync(RefreshTokenDto model);
-    Task<string> GenerateTokenAsync(GenerateTokenRequest model);
+    Task<string> GenerateTokenAsync(UserClaimsDto model);
     Task<GetUserDto?> GetUserAsync(string userId);
     Task<GeneralResponse> VerifyAccountAsync(VerifyAccountDto model);
 }

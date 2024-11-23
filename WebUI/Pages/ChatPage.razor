@@ -1,0 +1,196 @@
+﻿@page "/chat"
+@using Application.DTOs.Request.Entities
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Security.Claims
+@using Application.Extension
+@using Domain.Models.ChatModels
+@inject LocalStorageService LocalStorageService
+@inject NavigationManager _navigation
+@inject AvailableUserState state
+
+
+<br />
+<br />
+<br />
+<div class="row">
+
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header text-success">Online Users</div>
+            <div class="card-body">
+                <div class="col-lg-2">
+                    <ul class="list-group">
+                        <AuthorizeView>
+                        @if (AvailableUsers != null)
+                        {
+                            @foreach(var user in AvailableUsers)
+                                {                                    
+                                    var currentUser = user;
+                                        @if(currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value)
+                                        {                                  
+                                          <li class="list-group-item list-group-item-action" style="cursor:pointer">
+                                              <a class="nav-link text-success" @onclick="() => ChatUser(currentUser)">@user.Fullname</a>                                           
+                                          </li>
+                                        }   
+                                }                         
+                        }
+                        @if(AvailableUsers!.Count == 0)
+                        {
+                            <span class="fw-bold text-success">Loading...</span>
+                        }
+                        </AuthorizeView>                  
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card-header">Aou Hub</div>
+            <Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+                [@context.User.Claims.Where(i => i.Type == ClaimTypes.Name).Last().Value]
+            </Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+           
+            
+
+            <div class="card-body">
+                <ul class="list-group">
+                    @foreach (var chat in GroupChats)
+                    {
+                        <li class="list-group-item mb-2">
+                            @chat.DateTime.Date.ToString("HH:mm")
+                            <br />
+                            <span class="fw-bold">@chat.SenderName</span>
+                            <br />
+                            @chat.Message
+                            <br />
+                            @chat.DateTime
+                        </li>
+                    }
+                </ul>
+                <div class="mt-3">
+                    <EditForm Model="GroupChat" OnValidSubmit="SendChatToGroup">
+                        <DataAnnotationsValidator/>
+                        <div class="vstack gap-1">                            
+                            <InputText @bind-Value="GroupChat.Message" class="form-control" placeholder="Enter your message"></InputText>
+                        </div>
+                        <button class="float-end btn btn-success mt-3" type="submit">Send Message</button>
+                    </EditForm>
+                </div>
+            </div>
+            <div class="card-footer">
+                @if (!IsConnected)
+                {
+                    <div class="alert alert-danger">Chat Disconnected</div>
+                }
+                else
+                {
+                    <div class="alert alert-success">Chat Connected</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    public List<AvailableUserDto> AvailableUsers { get; set; } = [];
+    private GroupChat GroupChat = new();
+    private HubConnection? _hubConnection;
+    public List<GroupChatDto> GroupChats { get; set; } = [];
+
+    [CascadingParameter] public Task<AuthenticationState> authenticationState { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var tokenModel = await LocalStorageService.GetModelFromToken();
+        var accessToken = tokenModel?.Token;
+
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            // Redirect to login if token is missing
+            _navigation.NavigateTo("/login");
+            return;
+        }
+        
+        Console.WriteLine(accessToken);
+        
+        _hubConnection = new HubConnectionBuilder()
+               .WithUrl("https://localhost:7201/chathub",  options =>
+               {
+                   options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken);
+               })
+               .Build();
+
+        _hubConnection.On<GroupChatDto>("ReceiveGroupMessages", (chat)
+        =>
+        {
+            GroupChats.Add(chat);
+            InvokeAsync(() => StateHasChanged());
+        });
+
+        _hubConnection.On<List<AvailableUserDto>>("NotifyAllClients", (users)
+       =>
+       {
+           AvailableUsers = users;
+           Console.WriteLine(users.Count);
+           InvokeAsync(() => StateHasChanged());
+       });           
+
+
+        await _hubConnection.StartAsync();
+        await GetCurrentUserAuthentication();
+        
+        var httpClient = new HttpClient();
+
+        GroupChats = await httpClient.GetFromJsonAsync<List<GroupChatDto>>("https://localhost:7201/api/chats/group-chats");
+        AvailableUsers = await httpClient.GetFromJsonAsync<List<AvailableUserDto>>("https://localhost:7201/api/chats/users");
+    }
+
+    private async Task GetCurrentUserAuthentication()
+    {
+        var user = (await authenticationState).User;
+        if(user.Identity!.IsAuthenticated == true)
+        {
+            await _hubConnection!.SendAsync("AddAvailableUserAsync", new AvailableUser()
+                {
+                    UserId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value
+                });
+        }
+    }
+
+    private bool IsConnected
+    {
+        get
+        {
+            return _hubConnection?.State == HubConnectionState.Connected;
+        }
+    }
+
+  
+
+    public async void SendChatToGroup()
+    {
+        GroupChat.SenderId = (await authenticationState).User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier!).Value;
+        await _hubConnection!.SendAsync("SendMessageToGroup", GroupChat);
+        GroupChat = new();
+    }
+
+    private void ChatUser(AvailableUserDto model)
+    {
+        state.SetStates(model.Fullname!, model.UserId!);
+        _navigation.NavigateTo("/individual");
+    }
+    
+    private async Task<string> GetTokenFromLocalStorageAsync()
+    {
+        var tokenModel = await LocalStorageService.GetModelFromToken();
+        return tokenModel?.Token ?? string.Empty;
+    }
+    
+    private async Task<string?> GetUserIdAsync()
+    {
+        var userId = await LocalStorageService.GetUserIdFromToken();
+        return userId;
+    }
+    
+}

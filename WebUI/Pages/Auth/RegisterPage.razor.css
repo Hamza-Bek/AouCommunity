@@ -1,0 +1,472 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('/img/HomeBg.jpg') no-repeat center center/cover;
+    overflow: hidden; /* Prevents scrolling */
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); /* Optional: darkens the background */
+    backdrop-filter: blur(5px); /* Adjust the blur amount as needed */
+    z-index: -1; /* Ensure the overlay is behind the form */
+}
+
+form {
+    width: 100%; /* Use 100% for flexibility */
+    max-width: 400px; /* Set a maximum width to maintain form size */
+    max-height: 90vh; /* Prevent the form from exceeding a certain height */
+    overflow-y: auto; /* Allow scrolling inside the form if needed */
+    background-color: white;
+    padding: 10px; /* Reduced padding for less height */
+    border-radius: 10px; /* Reduced border-radius for a sharper look */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transition: width 0.3s ease-in-out;
+}
+
+.btn-primary {
+    width: 100%;
+    border: none;
+    border-radius: 50px;
+}
+
+.form-control {
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom-color: rgba(0, 0, 0, 0.42);
+    box-shadow: none !important;
+    border: none;
+    border-bottom: 1px solid;
+    border-radius: 4px 4px 0;
+    margin-bottom: 5px; /* Reduce space below input fields */
+}
+
+.welcome-image {
+    display: block; /* Ensures the image is treated as a block element */
+    max-width: 50%; /* Adjust width as needed */
+    margin: 0 auto 10px; /* Centers the image and adds some space below it */
+}
+
+h4 {
+    font-size: 1.5rem; /* Reduced heading size for less height */
+    font-weight: 700;
+    text-align: center; /* Center text */
+    margin-bottom: 10px; /* Adjust bottom margin to reduce height */
+}
+
+.form-label {
+    font-weight: 600; /* Adjust font weight */
+    margin-bottom: 5px; /* Space below labels */
+}
+
+@media only screen and (max-width: 1024px) {
+    form {
+        width: 80%; /* Wider form on medium screens */
+        margin-top: 20px; /* Reduced margin for top */
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    form {
+        width: 90%; /* Allow for more flexibility */
+        padding: 10px; /* Smaller padding */
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    form {
+        width: 100%; /* Full width for small screens */
+        padding: 10px; /* Smaller padding */
+    }
+
+    h4 {
+        font-size: 1.4rem; /* Adjust heading size */
+        margin-bottom: 5px; /* Reduced margin */
+    }
+
+    .btn-primary {
+        font-size: 1rem; /* Maintain font size */
+        padding: 8px; /* Adjust padding */
+    }
+
+    .form-control {
+        font-size: 0.9rem; /* Maintain font size */
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    form {
+        width: 100%; /* Ensure it takes full width */
+    }
+
+    h4 {
+        font-size: 1.2rem; /* Smaller heading */
+    }
+
+    .btn-primary {
+        font-size: 0.9rem; /* Adjust button font */
+        padding: 6px; /* Adjust padding */
+    }
+}
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('/img/HomeBg.jpg') no-repeat center center/cover;
+    overflow: hidden; /* Prevents scrolling */
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); /* Optional: darkens the background */
+    backdrop-filter: blur(5px); /* Adjust the blur amount as needed */
+    z-index: -1; /* Ensure the overlay is behind the form */
+}
+
+form {
+    width: 100%; /* Use 100% for flexibility */
+    max-width: 400px; /* Set a maximum width to maintain form size */
+    max-height: 90vh; /* Prevent the form from exceeding a certain height */
+    overflow-y: auto; /* Allow scrolling inside the form if needed */
+    background-color: white;
+    padding: 10px; /* Reduced padding for less height */
+    border-radius: 10px; /* Reduced border-radius for a sharper look */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transition: width 0.3s ease-in-out;
+}
+
+.btn-primary {
+    width: 100%;
+    border: none;
+    border-radius: 50px;
+}
+
+.form-control {
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom-color: rgba(0, 0, 0, 0.42);
+    box-shadow: none !important;
+    border: none;
+    border-bottom: 1px solid;
+    border-radius: 4px 4px 0;
+    margin-bottom: 5px; /* Reduce space below input fields */
+}
+
+.welcome-image {
+    display: block; /* Ensures the image is treated as a block element */
+    max-width: 50%; /* Adjust width as needed */
+    margin: 0 auto 10px; /* Centers the image and adds some space below it */
+}
+
+h4 {
+    font-size: 1.5rem; /* Reduced heading size for less height */
+    font-weight: 700;
+    text-align: center; /* Center text */
+    margin-bottom: 10px; /* Adjust bottom margin to reduce height */
+}
+
+.form-label {
+    font-weight: 600; /* Adjust font weight */
+    margin-bottom: 5px; /* Space below labels */
+}
+
+@media only screen and (max-width: 1024px) {
+    form {
+        width: 80%; /* Wider form on medium screens */
+        margin-top: 20px; /* Reduced margin for top */
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    form {
+        width: 90%; /* Allow for more flexibility */
+        padding: 10px; /* Smaller padding */
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    form {
+        width: 100%; /* Full width for small screens */
+        padding: 10px; /* Smaller padding */
+    }
+
+    h4 {
+        font-size: 1.4rem; /* Adjust heading size */
+        margin-bottom: 5px; /* Reduced margin */
+    }
+
+    .btn-primary {
+        font-size: 1rem; /* Maintain font size */
+        padding: 8px; /* Adjust padding */
+    }
+
+    .form-control {
+        font-size: 0.9rem; /* Maintain font size */
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    form {
+        width: 100%; /* Ensure it takes full width */
+    }
+
+    h4 {
+        font-size: 1.2rem; /* Smaller heading */
+    }
+
+    .btn-primary {
+        font-size: 0.9rem; /* Adjust button font */
+        padding: 6px; /* Adjust padding */
+    }
+}
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('/img/HomeBg.jpg') no-repeat center center/cover;
+    overflow: hidden; /* Prevents scrolling */
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); /* Optional: darkens the background */
+    backdrop-filter: blur(5px); /* Adjust the blur amount as needed */
+    z-index: -1; /* Ensure the overlay is behind the form */
+}
+
+form {
+    width: 100%; /* Use 100% for flexibility */
+    max-width: 400px; /* Set a maximum width to maintain form size */
+    max-height: 90vh; /* Prevent the form from exceeding a certain height */
+    overflow-y: auto; /* Allow scrolling inside the form if needed */
+    background-color: white;
+    padding: 10px; /* Reduced padding for less height */
+    border-radius: 10px; /* Reduced border-radius for a sharper look */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transition: width 0.3s ease-in-out;
+}
+
+.btn-primary {
+    width: 100%;
+    border: none;
+    border-radius: 50px;
+}
+
+.form-control {
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom-color: rgba(0, 0, 0, 0.42);
+    box-shadow: none !important;
+    border: none;
+    border-bottom: 1px solid;
+    border-radius: 4px 4px 0;
+    margin-bottom: 5px; /* Reduce space below input fields */
+}
+
+.welcome-image {
+    display: block; /* Ensures the image is treated as a block element */
+    max-width: 50%; /* Adjust width as needed */
+    margin: 0 auto 10px; /* Centers the image and adds some space below it */
+}
+
+h4 {
+    font-size: 1.5rem; /* Reduced heading size for less height */
+    font-weight: 700;
+    text-align: center; /* Center text */
+    margin-bottom: 10px; /* Adjust bottom margin to reduce height */
+}
+
+.form-label {
+    font-weight: 600; /* Adjust font weight */
+    margin-bottom: 5px; /* Space below labels */
+}
+
+@media only screen and (max-width: 1024px) {
+    form {
+        width: 80%; /* Wider form on medium screens */
+        margin-top: 20px; /* Reduced margin for top */
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    form {
+        width: 90%; /* Allow for more flexibility */
+        padding: 10px; /* Smaller padding */
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    form {
+        width: 100%; /* Full width for small screens */
+        padding: 10px; /* Smaller padding */
+    }
+
+    h4 {
+        font-size: 1.4rem; /* Adjust heading size */
+        margin-bottom: 5px; /* Reduced margin */
+    }
+
+    .btn-primary {
+        font-size: 1rem; /* Maintain font size */
+        padding: 8px; /* Adjust padding */
+    }
+
+    .form-control {
+        font-size: 0.9rem; /* Maintain font size */
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    form {
+        width: 100%; /* Ensure it takes full width */
+    }
+
+    h4 {
+        font-size: 1.2rem; /* Smaller heading */
+    }
+
+    .btn-primary {
+        font-size: 0.9rem; /* Adjust button font */
+        padding: 6px; /* Adjust padding */
+    }
+}
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('/img/HomeBg.jpg') no-repeat center center/cover;
+    overflow: hidden; /* Prevents scrolling */
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); /* Optional: darkens the background */
+    backdrop-filter: blur(5px); /* Adjust the blur amount as needed */
+    z-index: -1; /* Ensure the overlay is behind the form */
+}
+
+form {
+    width: 100%; /* Use 100% for flexibility */
+    max-width: 400px; /* Set a maximum width to maintain form size */
+    max-height: 90vh; /* Prevent the form from exceeding a certain height */
+    overflow-y: auto; /* Allow scrolling inside the form if needed */
+    background-color: white;
+    padding: 10px; /* Reduced padding for less height */
+    border-radius: 10px; /* Reduced border-radius for a sharper look */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transition: width 0.3s ease-in-out;
+}
+
+.btn-primary {
+    width: 100%;
+    border: none;
+    border-radius: 50px;
+}
+
+.form-control {
+    color: rgba(0, 0, 0, 0.87);
+    border-bottom-color: rgba(0, 0, 0, 0.42);
+    box-shadow: none !important;
+    border: none;
+    border-bottom: 1px solid;
+    border-radius: 4px 4px 0;
+    margin-bottom: 5px; /* Reduce space below input fields */
+}
+
+.welcome-image {
+    display: block; /* Ensures the image is treated as a block element */
+    max-width: 50%; /* Adjust width as needed */
+    margin: 0 auto 10px; /* Centers the image and adds some space below it */
+}
+
+h4 {
+    font-size: 1.5rem; /* Reduced heading size for less height */
+    font-weight: 700;
+    text-align: center; /* Center text */
+    margin-bottom: 10px; /* Adjust bottom margin to reduce height */
+}
+
+.form-label {
+    font-weight: 600; /* Adjust font weight */
+    margin-bottom: 5px; /* Space below labels */
+}
+
+@media only screen and (max-width: 1024px) {
+    form {
+        width: 80%; /* Wider form on medium screens */
+        margin-top: 20px; /* Reduced margin for top */
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    form {
+        width: 90%; /* Allow for more flexibility */
+        padding: 10px; /* Smaller padding */
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    form {
+        width: 100%; /* Full width for small screens */
+        padding: 10px; /* Smaller padding */
+    }
+
+    h4 {
+        font-size: 1.4rem; /* Adjust heading size */
+        margin-bottom: 5px; /* Reduced margin */
+    }
+
+    .btn-primary {
+        font-size: 1rem; /* Maintain font size */
+        padding: 8px; /* Adjust padding */
+    }
+
+    .form-control {
+        font-size: 0.9rem; /* Maintain font size */
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    form {
+        width: 100%; /* Ensure it takes full width */
+    }
+
+    h4 {
+        font-size: 1.2rem; /* Smaller heading */
+    }
+
+    .btn-primary {
+        font-size: 0.9rem; /* Adjust button font */
+        padding: 6px; /* Adjust padding */
+    }
+}

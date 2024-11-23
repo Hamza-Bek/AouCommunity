@@ -1,0 +1,66 @@
+﻿@page "/verify/account"
+
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IAccountRepository _account
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager _navigation
+
+
+
+<div class="container-fluid">
+    <form class="mx-auto" @onsubmit="HandleValidSubmit">
+        <img src="img/aoulogo.png" alt="Welcome Image" class="welcome-image mb-3" />
+        <h4 class="text-center">Verification Code</h4>
+        <small>We have sent you an email contains a verification
+        code to @verifyAccountDto.Email  </small>
+        <div class="mb-3 mt-5">
+            <label for="password" class="form-label">Verification Code</label>
+            <input type="password" class="form-control" id="password" @bind="code" />
+            @if (response != null)
+            {
+            <small class="text-danger">@response.Message</small>
+            }
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Verify</button>
+    </form>
+</div>
+
+
+
+
+@code {
+    private string errorMessage;
+    private VerifyAccountDto verifyAccountDto = new();
+    private GeneralResponse response;
+    private string code;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+            verifyAccountDto.UserId = userIdClaim.Value;
+            verifyAccountDto.Email = user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
+        }
+    }
+    
+    private async Task HandleValidSubmit()
+    {
+        verifyAccountDto.VerificationCode = code;
+        
+        response = await _account.VerifyAccountAsync(verifyAccountDto);
+        if (response.Flag)
+        {
+            // Verification successful, navigate to the desired page
+            _navigation.NavigateTo("/");
+        }
+        else
+        {
+            // Verification failed, show the error message
+            errorMessage = response.Message;
+        }
+    }
+}

@@ -35,16 +35,27 @@ public class CustomAuthenticationProvider(LocalStorageService localStorageServic
     
     public async Task UpdateAuthenticationState(LocalStorageDto localStorageDTO)
     {
-        ClaimsPrincipal claimsPrincipal = new();
-        if (localStorageDTO.Token != null || localStorageDTO.Refresh != null)
+        ClaimsPrincipal claimsPrincipal = anonymous;
+        if (localStorageDTO.Token != null)
         {
             await localStorageService.SetBrowserLocalStorage(localStorageDTO);
+            Console.WriteLine("Token saved to local storage");
+
             var getUserClaims = DecryptToken(localStorageDTO.Token!);
-            claimsPrincipal = SetClaimPrincipal(getUserClaims);
+            if (getUserClaims != null)
+            {
+                claimsPrincipal = SetClaimPrincipal(getUserClaims);
+                Console.WriteLine("ClaimsPrincipal updated");
+            }
+            else
+            {
+                Console.WriteLine("Token decryption failed");
+            }
         }
         else
         {
             await localStorageService.RemoveTokenFromBrowserLocalStorage();
+            Console.WriteLine("Token removed from local storage");
         }
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
     }
@@ -71,20 +82,28 @@ public class CustomAuthenticationProvider(LocalStorageService localStorageServic
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwtToken);
 
-            var name = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Name)!.Value;
-            var email = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Email)!.Value;
-            var role = token.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Role)!.Value;
-            var fullname = token.Claims.FirstOrDefault(_ => _.Type == "Fullname")!.Value;
-            var id = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+            var name = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? string.Empty;
+            var email = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? string.Empty;
+            var role = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? string.Empty;
+            var fullname = token.Claims.FirstOrDefault(c => c.Type == "Fullname")?.Value ?? string.Empty;
+            var id = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
             var emailConfirmed = token.Claims.FirstOrDefault(c => c.Type == "EmailConfirmed")?.Value;
-            
+
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(email))
+            {
+                // Log the missing claims
+                Console.WriteLine("Missing required claims in the token");
+                return null;
+            }
+
             bool isEmailConfirmed = bool.TryParse(emailConfirmed, out bool result) && result;
-            
-            return new UserClaimsDto(id, fullname, name, email, role , isEmailConfirmed);
+
+            return new UserClaimsDto(id, fullname, name, email, role, isEmailConfirmed);
         }
-        catch
+        catch (Exception ex)
         {
-            return null!;
+            Console.WriteLine($"Token decryption failed: {ex.Message}");
+            return null;
         }
     }
 }

@@ -1,0 +1,147 @@
+﻿@page "/register"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IAccountRepository AccountService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+
+    <form class="mx-auto" @onsubmit="HandleRegistration">
+        <div class="container-fluid">
+            <img src="img/aoulogo.png" alt="Welcome Image" class="welcome-image mb-3" />
+            <h4 class="text-center">Create an Account</h4>
+
+            <div class="mb-3 mt-5">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" @bind="username" />
+                @if (!string.IsNullOrEmpty(usernameError))
+                {
+                    <small class="text-danger">@usernameError</small>
+                }
+            </div>
+
+            <div class="mb-3 mt-5">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" @bind="email" />
+                @if (!string.IsNullOrEmpty(emailError))
+                {
+                    <small class="text-danger">@emailError</small>
+                }
+            </div>
+
+            <div class="mb-3 mt-5">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" @bind="password" />
+                @if (!string.IsNullOrEmpty(passwordError))
+                {
+                    <small class="text-danger">@passwordError</small>
+                }
+            </div>
+
+            <div class="mb-3 mt-5">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" @bind="confirmPassword" />
+                @if (!string.IsNullOrEmpty(confirmPasswordError))
+                {
+                    <small class="text-danger">@confirmPasswordError</small>
+                }
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-4">Register</button>
+        </div>
+        </form>
+
+
+@code {
+    private CreateAccountDto NewUser { get; set; } = new CreateAccountDto();
+    private string username;
+    private string email;
+    private string password;
+    private string confirmPassword;
+    
+    // Error messages
+    private string usernameError;
+    private string emailError;
+    private string passwordError;
+    private string confirmPasswordError;
+    
+    private async Task HandleRegistration()
+    {
+        NewUser.Name = username;
+        NewUser.Email = email;
+        NewUser.Password = password;
+        NewUser.ConfirmPassword = confirmPassword;
+        
+        var result = await AccountService.CreateAccountAsync(NewUser);
+
+        if (result.Flag)
+        {
+            var responseLogin = await AccountService.LoginAccountAsync(NewUser);
+            
+            if (responseLogin.Flag)
+            {
+                var customAuthStateProvider = (CustomAuthenticationProvider)AuthStateProvider;
+                await customAuthStateProvider.UpdateAuthenticationState(new LocalStorageDto()
+                {
+                   Token =  responseLogin.Token,
+                   Refresh = responseLogin.RefreshToken
+                });
+            }
+            Navigation.NavigateTo("/verify/account");
+        }
+        else
+        {
+            // Show error message
+            Console.WriteLine($"Registration failed: {result.Message}");
+        }
+        
+        usernameError = emailError = passwordError = confirmPasswordError = string.Empty;
+
+        // Validate form fields
+        bool isValid = true;
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            usernameError = "Username is required.";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            emailError = "Email is required.";
+            isValid = false;
+        }
+        else if (!email.Contains("@"))
+        {
+            emailError = "Please enter a valid email address.";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            passwordError = "Password is required.";
+            isValid = false;
+        }
+        else if (password.Length < 6)
+        {
+            passwordError = "Password must be at least 6 characters long.";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(confirmPassword))
+        {
+            confirmPasswordError = "Please confirm your password.";
+            isValid = false;
+        }
+        else if (password != confirmPassword)
+        {
+            confirmPasswordError = "Passwords do not match.";
+            isValid = false;
+        }
+
+        // If form is valid, proceed with registration
+        if (isValid)
+        {
+            Console.WriteLine($"Username: {username}, Email: {email}, Password: {password}, Confirm Password: {confirmPassword}");
+            // Perform the registration process here
+        }
+    }
+}

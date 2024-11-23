@@ -21,8 +21,8 @@ namespace Infrastructure.Repositories;
 
 public class AccountRepository : IAccountRepository
 {
-   
-    private const string TokenSecret = "nM8mgxRKlkusaRsPzauqBsHDf1LmoYBukQ6JY5XaA_4=";
+    private const int TokenExpiryMinutes = 60;
+    private const string SecretKey = "nM8mgxRKlkusaRsPzauqBsHDf1LmoYBukQ6JY5XaA_4=";
     private static readonly TimeSpan TokenLifeTime = TimeSpan.FromHours(8);
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
@@ -70,18 +70,17 @@ public class AccountRepository : IAccountRepository
             if (!result.Succeeded)
                 return new LoginResponse(false, "Invalid Credntials");
 
-            var tokenRequest = new GenerateTokenRequest()
+            var userClaimsDto = new UserClaimsDto
             {
-                Email = user.Email,
-                Id = Guid.Parse(user.Id),
-                Claims = new Dictionary<string, JsonElement>
-                {
-                    { "Name", JsonDocument.Parse($"\"{user.Name}\"").RootElement }
-                    // Add other claims here as needed
-                }
+                Id = user.Id,
+                UserName = user.UserName ?? "Unknown",
+                Email = user.Email ?? "Unknown",
+                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "User",
+                FullName = user.Name ?? "Unknown",
+                EmailConfirmed = user.EmailConfirmed
             };
             
-            string jwtToken = await GenerateTokenAsync(tokenRequest);
+            string jwtToken = await GenerateTokenAsync(userClaimsDto);
             string refreshToken = GenerateRefreshToken();
 
             if (string.IsNullOrEmpty(jwtToken) || string.IsNullOrWhiteSpace(refreshToken))
@@ -166,18 +165,17 @@ public class AccountRepository : IAccountRepository
      
      var response = await AssignUserToRole(user, new IdentityRole{ Name = defaultRole});
      
-     var tokenRequest = new GenerateTokenRequest()
+     var userClaimsDto = new UserClaimsDto
      {
+         Id = user.Id,
+         UserName = user.UserName,
          Email = user.Email,
-         Id = Guid.Parse(user.Id),
-         Claims = new Dictionary<string, JsonElement>
-         {
-             { "Name", JsonDocument.Parse($"\"{user.Name}\"").RootElement }
-             // Add other claims as needed
-         }
+         Role = defaultRole,
+         FullName = user.Name,
+         EmailConfirmed = user.EmailConfirmed
      };
 
-     string jwtToken = await GenerateTokenAsync(tokenRequest);
+     string jwtToken = await GenerateTokenAsync(userClaimsDto);
      string refreshToken = GenerateRefreshToken();
      
      if(string.IsNullOrEmpty(jwtToken) || string.IsNullOrEmpty(refreshToken))
@@ -239,7 +237,7 @@ public class AccountRepository : IAccountRepository
             return new GeneralResponse(false, ex.Message);
         }
     }
-    
+
     public async Task<GetUserDto?> GetUserAsync(string userId)
     {
         var getUser = await _context.Users
@@ -256,19 +254,17 @@ public class AccountRepository : IAccountRepository
         if (token == null) return new LoginResponse();
         var user = await _userManager.FindByIdAsync(token.UserId);
 
-        var tokenRequest = new GenerateTokenRequest()
+        var userClaimsDto = new UserClaimsDto
         {
+            Id = user.Id,
+            UserName = user.UserName,
             Email = user.Email,
-            Id = Guid.Parse(user.Id),
-            Claims = new Dictionary<string, JsonElement>
-            {
-                { "Name", JsonDocument.Parse($"\"{user.Name}\"").RootElement }
-                // Add more claims if needed, like roles or custom data
-            }
+            Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "User",
+            FullName = user.Name,
+            EmailConfirmed = user.EmailConfirmed
         };
-
         
-        string newToken = await GenerateTokenAsync(tokenRequest);
+        string newToken = await GenerateTokenAsync(userClaimsDto);
         string newRefreshToken = GenerateRefreshToken();
 
         var saveResult = await SaveRefreshToken(user.Id, newRefreshToken);
@@ -299,46 +295,30 @@ public class AccountRepository : IAccountRepository
     
     private static string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
-    public async Task<string> GenerateTokenAsync(GenerateTokenRequest model)
+    public async Task<string> GenerateTokenAsync(UserClaimsDto user)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(TokenSecret);
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new List<Claim>
+        var claims = new[]
         {
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Sub, model.Email),
-            new(JwtRegisteredClaimNames.Email, model.Email),
-            new("Id", model.Id.ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim("Fullname", user.FullName),
+            new Claim("EmailConfirmed", user.EmailConfirmed.ToString())
         };
 
-        foreach (var claimPair in model.Claims)
-        {
-            var jsonElement = (JsonElement)claimPair.Value;
-            var valueType = jsonElement.ValueKind switch
-            {
-                JsonValueKind.True => ClaimValueTypes.Boolean,
-                JsonValueKind.False => ClaimValueTypes.Boolean,
-                JsonValueKind.Number => ClaimValueTypes.Double,
-                _ => ClaimValueTypes.String
-            };
+        var token = new JwtSecurityToken(
+            issuer: "https://localhost:7201",
+            audience: "https://localhost:7201",
+            claims: claims,
+            expires: DateTime.Now.AddMinutes(TokenExpiryMinutes),
+            signingCredentials: credentials
+        );
 
-            var claim = new Claim(claimPair.Key, claimPair.Value.ToString()!, valueType);
-            claims.Add(claim);
-        }
-
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.Add(TokenLifeTime),
-            Issuer = "https://localhost:7201",
-            Audience = "https://localhost:7201",
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
-        };
-
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-
-        return tokenHandler.WriteToken(token);
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
     
     private static string CheckResponse(IdentityResult result)

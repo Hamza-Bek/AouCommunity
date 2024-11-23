@@ -1,5 +1,6 @@
 using Application.DTOs.Request.Account;
 using Application.DTOs.Request.AuthenticationDto;
+using Application.DTOs.Response.Account;
 using Application.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -60,7 +61,7 @@ public class AccountsController : Controller
     }
 
     [HttpPost("generate/token")]
-    public async Task<ActionResult> GenerateToken(GenerateTokenRequest model)
+    public async Task<ActionResult> GenerateToken(UserClaimsDto model)
     {
         return Ok(await _accountRepository.GenerateTokenAsync(model));
     }

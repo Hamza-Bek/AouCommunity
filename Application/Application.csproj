@@ -10,6 +10,7 @@
       <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
       <PackageReference Include="FluentValidation" Version="11.11.0" />
       <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="9.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
         <PrivateAssets>all</PrivateAssets>
