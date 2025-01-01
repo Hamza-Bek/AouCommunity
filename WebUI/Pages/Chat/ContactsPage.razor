@@ -1,67 +1,58 @@
-<div class="contact-header">                  
-                    <i class="fa-solid fa-backward"></i>
-                    <div class="search-bar">
-                        <input type="text" placeholder="Search..." />
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </div>                 
+<div class="contact-header">
+    <i class="fa-solid fa-backward"></i>
+    <div class="search-bar">
+        <input type="text" placeholder="Search..." />
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+</div>
+
+@foreach (var contact in Contacts)
+{
+    if (UserProfilePhoto is null)
+    {
+        <div class="contact-body">
+            <div class="circle-profile">@contact.Name[0]</div>
+            <div class="contact-info">
+                <div class="contact-user-name">
+                    @contact.Name
                 </div>
-                <a href="youtube.com">
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div>    
-                </a>
-                         
-                    
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div>   
 
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div>   
+                <div class="last-message">
+                    Hey, Ready for tonight?
+                </div>
+            </div>
+        </div>
+    }
+    else if (UserProfilePhoto is not null)
+    {
+        <div class="contact-body">
+            <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
+            <div class="contact-info">
+                <div class="contact-user-name">
+                    @contact.Name
+                </div>
 
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div>    
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div> 
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div> 
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div> 
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div> 
-                    <div class="contact-body">                    
-                        <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-                        <div class="contact-user-name">
-                            Rasheed Mozaffar is a bad ass
-                        </div>                    
-                    </div>      
+                <div class="last-message">
+                    Hey, Ready for tonight?
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+      [Parameter] 
+      public string UserProfilePhoto { get; set; }
+
+      public List<Contact> Contacts = new()
+      {
+          new Contact { Name = "Hamza" },
+          new Contact {Name = "Rasheed"}
+      };
+
+      public class Contact
+      {
+          public string Name { get; set; }
+      }
+
+}                    

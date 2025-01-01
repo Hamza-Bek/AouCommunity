@@ -13,6 +13,18 @@
     z-index: 1;
 }
 
+.circle-profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    z-index: 1;
+    background: #0a53be;
+    color: white;
+}
+
 .user-name {
     font-size: 16px;
     font-weight: 600;

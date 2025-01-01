@@ -5,7 +5,6 @@
     align-items: center;
     padding: 1rem;
     gap: .5rem;
-
 }
 
 .search-bar {
@@ -41,13 +40,27 @@
     border: #E8E8E8 1px solid;
 }
 
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    margin: 0.25rem;
+}
+
 .contact-body .contact-user-name{
-    padding-left: 1rem;
+    padding-top: 1rem;
+    margin: 0;
     font-size: 16px;
     font-weight: 600;
     color: #000;
+    opacity: 0.8;
     z-index: 0;
-    opacity: 0.3;
+}
+
+.contact-body .last-message {
+    display: flex;
+    font-size: 14px;
+    color: #777;
+    opacity: 0.5;
 }
 
 .contact-profile-photo {
@@ -60,7 +73,19 @@
 }
 
 
-
+.circle-profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 100%;
+    background: #0a53be;
+    color: white;
+    z-index: 1;
+    margin: 2.5%;
+    z-index: 1;
+}
 
 @media (max-width: 1100px) {
 
@@ -103,4 +128,4 @@
     .contact-container {
         display: none;
     }
-}}
+}

@@ -1,7 +1,18 @@
 <div class="chat-header">
-    <div>
-        <img src="Machine Made High Quality Carpet.png" class="profile-photo" />
-    </div>
+    
+    @if (UserProfilePhoto is null)
+    {
+        <div class="circle-profile">
+            HM
+        </div>    
+    }
+    else
+    {
+        <div>
+            <img src="Machine Made High Quality Carpet.png" class="profile-photo"/>
+        </div>    
+    }
+    
 
     <div class="user-name">
         Rasheed Mozaffar
@@ -54,3 +65,7 @@
         <button type="submit"><i class="fa-solid fa-play" style="color: #ffffff;"></i></button>
     </div>
 </div>     
+
+@code {
+    [Parameter] public string UserProfilePhoto { get; set; }
+}
