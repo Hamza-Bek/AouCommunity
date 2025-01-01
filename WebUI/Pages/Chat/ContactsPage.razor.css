@@ -1,0 +1,106 @@
+
+.contact-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    gap: .5rem;
+
+}
+
+.search-bar {
+    width: 100%;
+    height: 2.5rem;
+    border-radius: 50px;
+    background-color: #E8E8E8;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.3rem 0.5rem;
+    border-radius: 50px;
+    border: none;
+    background-color: #E8E8E8;
+    outline: none;
+    font-size: 1rem;
+}
+
+.contact-header i  {
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.contact-body {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    margin: .25rem;
+    border: #E8E8E8 1px solid;
+}
+
+.contact-body .contact-user-name{
+    padding-left: 1rem;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+    z-index: 0;
+    opacity: 0.3;
+}
+
+.contact-profile-photo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    z-index: 1;
+    margin: 2.5%;
+    z-index: 1;
+}
+
+
+
+
+@media (max-width: 1100px) {
+
+    .contact-container {
+        display: none;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    
+    .contact-body {
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+
+    .contact-body .contact-user-name {
+        font-size: 14px;
+    }
+
+    .contact-profile-photo {
+        width: 35px;
+        height: 35px;
+        margin: 0;
+    }
+
+    .search-bar input {
+        font-size: 1rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    
+}
+
+/* Small mobile responsiveness */
+@media (max-width: 480px) {
+
+   
+
+    .contact-container {
+        display: none;
+    }
+}}

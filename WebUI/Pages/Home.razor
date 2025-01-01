@@ -1,109 +1,152 @@
 ﻿@page "/"
+@using Application.DTOs.Request.Entities
+@using Application.Extension
+@using Domain.Models.ChatModels
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.SignalR.Client
-@inject NavigationManager Navigation
+@inject LocalStorageService LocalStorageService
+@inject NavigationManager _navigation
+@inject AvailableUserState state
 
 
-
-
-<div id="chatbox">
-    <div id="friendslist">
-        <div id="topmenu">
-            <span class="friends"></span>
-            <span class="chats"></span>
-            <span class="history"></span>
-        </div>
-
-        <div id="friends">
-           
-
-            <div class="friend">
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/245657/5_copy.jpg" />
-                <p>
-                    <strong>	Darnell	Strickland</strong>
-                    <span>darnellstrickland@gmail.com</span>
-                </p>
-                <div class="status inactive"></div>
-            </div>
-
-            <div id="search">
-                <input type="text" id="searchfield" value="Search contacts..." />
-            </div>
-
-        </div>
-
+<body >
+<div class="chat-container">
+    <div class="contact-card">
+        <AuthorizeView>
+            @if (AvailableUsers is not null)
+            {
+                @foreach (var contact in AvailableUsers)
+                {
+                    var currentUser = contact;
+                    @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value)
+                    {
+                        <div class="contact-item" @onclick="() => SelectContact(contact)">
+                            <a class="nav-link text-success" @onclick="() => ChatUser(currentUser)">@contact.Fullname</a>
+                        </div>
+                    }
+                }
+            }
+        
+        </AuthorizeView>
     </div>
 
-    <div id="chatview" class="p1">
-        <div id="profile">
-
-            <div id="close">
-                <div class="cy"></div>
-                <div class="cx"></div>
-            </div>
-
-            <p>Miro Badev</p>
-            <span>miro@badev@gmail.com</span>
-        </div>
-        <div id="chat-messages">
-            <label>Thursday 02</label>
-
-            <div class="message">
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/245657/1_copy.jpg" />
-                <div class="bubble">
-                    Really cool stuff!
-                    <div class="corner"></div>
-                    <span>3 min</span>
-                </div>
-            </div>
-
-            <div class="message right">
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/245657/2_copy.jpg" />
-                <div class="bubble">
-                    Can you share a link for the tutorial?
-                    <div class="corner"></div>
-                    <span>1 min</span>
-                </div>
-            </div>
-
-            <div class="message">
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/245657/1_copy.jpg" />
-                <div class="bubble">
-                    Yeah, hold on
-                    <div class="corner"></div>
-                    <span>Now</span>
-                </div>
-            </div>
-
-            <div class="message right">
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/245657/2_copy.jpg" />
-                <div class="bubble">
-                    Can you share a link for the tutorial?
-                    <div class="corner"></div>
-                    <span>1 min</span>
-                </div>
-            </div>
-
-            <div class="message">
-                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/245657/1_copy.jpg" />
-                <div class="bubble">
-                    Yeah, hold on
-                    <div class="corner"></div>
-                    <span>Now</span>
-                </div>
-            </div>
-
-        </div>
-
-        <div id="sendmessage">
-            <input type="text" value="Send message..." />
-            <button id="send"></button>
-        </div>
-
-    </div>
+ 
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="/js/ChatBox.js"></script>
-@code {
+</body>
+  
 
+
+<script src="js/Chatbox.js" defer></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+@code {
+    public List<AvailableUserDto> AvailableUsers { get; set; } = [];
+    private GroupChat GroupChat = new();
+    private HubConnection? _hubConnection;
+    public List<GroupChatDto> GroupChats { get; set; } = [];
+
+    [CascadingParameter] public Task<AuthenticationState> authenticationState { get; set; }
+
+    private AvailableUserDto SelectedContact;
+
+    private void SelectContact(AvailableUserDto contact)
+    {
+        SelectedContact = contact;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tokenModel = await LocalStorageService.GetModelFromToken();
+        var accessToken = tokenModel?.Token;
+
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            // Redirect to login if token is missing
+            _navigation.NavigateTo("/login");
+            return;
+        }
+        
+        Console.WriteLine(accessToken);
+        
+        _hubConnection = new HubConnectionBuilder()
+               .WithUrl("https://localhost:7201/chathub",  options =>
+               {
+                   options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken);
+               })
+               .Build();
+
+        _hubConnection.On<GroupChatDto>("ReceiveGroupMessages", (chat)
+        =>
+        {
+            GroupChats.Add(chat);
+            InvokeAsync(() => StateHasChanged());
+        });
+
+        _hubConnection.On<List<AvailableUserDto>>("NotifyAllClients", (users)
+       =>
+       {
+           AvailableUsers = users;
+           Console.WriteLine(users.Count);
+           InvokeAsync(() => StateHasChanged());
+       });           
+
+
+        await _hubConnection.StartAsync();
+        await GetCurrentUserAuthentication();
+        
+        var httpClient = new HttpClient();
+
+        GroupChats = await httpClient.GetFromJsonAsync<List<GroupChatDto>>("https://localhost:7201/api/chats/group-chats");
+        AvailableUsers = await httpClient.GetFromJsonAsync<List<AvailableUserDto>>("https://localhost:7201/api/chats/users");
+    }
+
+    private async Task GetCurrentUserAuthentication()
+    {
+        var user = (await authenticationState).User;
+        if(user.Identity!.IsAuthenticated == true)
+        {
+            await _hubConnection!.SendAsync("AddAvailableUserAsync", new AvailableUser()
+                {
+                    UserId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value
+                });
+        }
+    }
+
+    private bool IsConnected
+    {
+        get
+        {
+            return _hubConnection?.State == HubConnectionState.Connected;
+        }
+    }
+
+  
+
+    public async void SendChatToGroup()
+    {
+        GroupChat.SenderId = (await authenticationState).User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier!).Value;
+        await _hubConnection!.SendAsync("SendMessageToGroup", GroupChat);
+        GroupChat = new();
+    }
+
+    private void ChatUser(AvailableUserDto model)
+    {
+        state.SetStates(model.Fullname!, model.UserId!);
+        _navigation.NavigateTo("/individual");
+    }
+    
+    private async Task<string> GetTokenFromLocalStorageAsync()
+    {
+        var tokenModel = await LocalStorageService.GetModelFromToken();
+        return tokenModel?.Token ?? string.Empty;
+    }
+    
+    private async Task<string?> GetUserIdAsync()
+    {
+        var userId = await LocalStorageService.GetUserIdFromToken();
+        return userId;
+    }
+    
+   
 }

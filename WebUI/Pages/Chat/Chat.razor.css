@@ -1,0 +1,129 @@
+html, body{
+    height: 100%;
+    margin: 0;
+}
+
+
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.second-container{
+    display: flex;
+    width: 95%;
+    height: 95%;
+    padding: 1px;
+    background-color: #E8E8E8;
+    box-sizing: border-box ;
+    border-radius: 25px;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 95%;
+    width: 75%;
+    margin: 1%;
+    background-color: #ffffff;
+    box-sizing: border-box ;
+    border-radius: 25px;
+    float: left;
+}
+
+
+.contact-container {
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    margin: 1%;
+    background-color: #ffffff;
+    box-sizing: border-box ;
+    border-radius: 25px;
+    float: right;
+    overflow:auto;
+    scrollbar-width: none;
+}
+
+
+@media (max-width: 1100px) {
+    .chat-container {
+        width: 98%;
+    }
+
+    .contact-container {
+        display: none;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+
+    .profile-photo {
+        width: 30px;
+        height: 30px;
+    }
+
+    .user-name {
+        font-size: 14px;
+    }
+
+    .message {
+        max-width: 75%;
+        padding: .5rem;
+    }
+
+    .receiver .message {
+        max-width: 75%;
+    }
+
+    .message-container input {
+        padding: 18px 20px;
+        font-size: 18px;
+    }
+
+    .contact-body {
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+
+    .contact-body .contact-user-name {
+        font-size: 14px;
+    }
+
+    .contact-profile-photo {
+        width: 35px;
+        height: 35px;
+        margin: 0;
+    }
+
+    .search-bar input {
+        font-size: 1rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .message-container button {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* Small mobile responsiveness */
+@media (max-width: 480px) {
+
+    .message {
+        font-size: small;
+        padding: .2rem 1rem;
+    }
+    .message-container input {
+        font-size: 16px;
+        padding: 15px 15px;
+    }
+
+    .contact-container {
+        display: none;
+    }
+}
