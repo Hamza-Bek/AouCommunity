@@ -120,7 +120,19 @@
     .chat-container {
         width: 98%;
     }
+
+    .toggle-sidebar {
+        display: block;
+        cursor: pointer;
+    }
 }
+
+.chat-container.hide {
+    display: none; /* Hidden when screen width is below 1100px */
+    width: 0;
+}
+
+
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
