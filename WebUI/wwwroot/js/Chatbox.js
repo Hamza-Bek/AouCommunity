@@ -1,10 +1,10 @@
 
-toggleBtn = document.getElementById('toggleBtn');
-SideMenu = document.getElementById('SideMenu');
-
-toggleBtn.addEventListener('click', () => {
-    SideMenu.classList.toggle('active');
-});
+function scrollToBottom(chatAreaId) {
+    var chatArea = document.getElementById(chatAreaId);
+    if (chatArea) {
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+}
 
 function toggleSidebar() {
     const sidebar = document.getElementById('contact');
@@ -12,3 +12,4 @@ function toggleSidebar() {
     const chat = document.getElementById("chat");
     chat.classList.toggle('hide');
 }
+

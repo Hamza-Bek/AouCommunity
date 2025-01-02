@@ -1,3 +1,5 @@
+@inject  IJSRuntime _JSRuntime
+
 <div class="chat-header">
 
     <a onclick="toggleSidebar()">
@@ -70,8 +72,15 @@
         <input type="text" placeholder="send message.."/>
         <button type="submit"><i class="fa-solid fa-play" style="color: #ffffff;"></i></button>
     </div>
-</div>     
+</div>
+
 
 @code {
     [Parameter] public string UserProfilePhoto { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await _JSRuntime.InvokeVoidAsync("scrollToBottom", "chatArea");
+    }
+
 }
