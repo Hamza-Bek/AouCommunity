@@ -23,6 +23,8 @@ builder.Services.AddTransient<CustomHttpHandler>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddBlazoredLocalStorage();
 
+builder.Services.AddSingleton<ReceiverChangeState>();
+
 builder.Services.AddScoped<IAccountRepository, AccountService>();
 builder.Services.AddScoped<IChatRepository, ChatService>();
 

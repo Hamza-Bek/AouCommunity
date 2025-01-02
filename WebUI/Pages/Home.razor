@@ -7,6 +7,7 @@
 @inject LocalStorageService LocalStorageService
 @inject NavigationManager _navigation
 @inject AvailableUserState state
+@inject ReceiverChangeState _Receiver
 
 
 <body >
@@ -53,7 +54,10 @@
 
     private void SelectContact(AvailableUserDto contact)
     {
+        Console.WriteLine($"Selected Contact: {contact.Fullname}, {contact.UserId}");
+        state.SetStates(contact.Fullname, contact.UserId); // Update the state
         SelectedContact = contact;
+        _Receiver.ReceiverId = contact.UserId;
     }
 
     protected override async Task OnInitializedAsync()
@@ -112,42 +116,14 @@
                     UserId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value
                 });
         }
-    }
-
-    private bool IsConnected
-    {
-        get
-        {
-            return _hubConnection?.State == HubConnectionState.Connected;
-        }
-    }
-
-  
-
-    public async void SendChatToGroup()
-    {
-        GroupChat.SenderId = (await authenticationState).User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier!).Value;
-        await _hubConnection!.SendAsync("SendMessageToGroup", GroupChat);
-        GroupChat = new();
-    }
+    }   
 
     private void ChatUser(AvailableUserDto model)
     {
         state.SetStates(model.Fullname!, model.UserId!);
-        _navigation.NavigateTo("/individual");
+        _navigation.NavigateTo("/chat");
     }
-    
-    private async Task<string> GetTokenFromLocalStorageAsync()
-    {
-        var tokenModel = await LocalStorageService.GetModelFromToken();
-        return tokenModel?.Token ?? string.Empty;
-    }
-    
-    private async Task<string?> GetUserIdAsync()
-    {
-        var userId = await LocalStorageService.GetUserIdFromToken();
-        return userId;
-    }
+  
     
    
 }

@@ -1,83 +1,227 @@
+@using Application.DTOs.Request.Entities
+@using Application.Extension
+@using Domain.Models.ChatModels
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.SignalR.Client
+@inject LocalStorageService LocalStorageService
+@inject NavigationManager _navigation
+@inject  AvailableUserState state
 @inject  IJSRuntime _JSRuntime
+@inject  ReceiverChangeState _Receiver
 
-<div class="chat-header">
+<AuthorizeView>
 
-    <a onclick="toggleSidebar()">
-        <div class="toggle-sidebar" >
-            <i class="fa-solid fa-chevron-left"></i>
-        </div>
-    </a>
+    <div class="chat-header">
+
+        <a onclick="toggleSidebar()">
+            <div class="toggle-sidebar" >
+                <i class="fa-solid fa-chevron-left"></i>
+            </div>
+        </a>
     
-    @if (UserProfilePhoto is null)
-    {
-        <div class="circle-profile">
-            HM
-        </div>    
-    }
-    else
-    {
-        <div>
-            <img src="Machine Made High Quality Carpet.png" class="profile-photo"/>
-        </div>    
-    }
+        @if (UserProfilePhoto is null)
+        {
+            <div class="circle-profile">
+                HM
+            </div>    
+        }
+        else
+        {
+            <div>
+                <img src="Machine Made High Quality Carpet.png" class="profile-photo"/>
+            </div>    
+        }
     
 
-    <div class="user-name">
-        Rasheed Mozaffar
-    </div>
-</div>
-<div class="chat-area" id="chatArea">
-    <div class="sender">
-        <div class="message">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore etlor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmlor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut laborod tempor incididunt ut labord tempor incididunt ut labor dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore</p>
+        <div class="user-name">
+            @state.Fullname
         </div>
     </div>
+    
+    <div class="chat-area" id="chatArea">
+    
+        @foreach (var chat in IndividualChats)
+        {
+            bool isSender = chat.SenderName == context.User.Identity!.Name;
+            string positionClass = isSender ? "sender" : "receiver";
+        
+            <div class="@positionClass">
+                <div class="message">
+                    @chat.Message
+                </div>
+            </div>
+        }
+   
 
-    <div class="receiver">
-        <div class="message">
-            <p>Hey There!</p>
+
+    </div>
+</AuthorizeView>
+
+<EditForm Model="IndividualChatModel" OnValidSubmit="SendIndividualChat">
+    <div class="chat-footer">
+        <div class="message-container">
+            <InputText @bind-Value="IndividualChatModel.Message" placeholder="send message.." class="input-text" CssClass=""/>
+            <button type="submit" class="submit-button">
+                <i class="fa-solid fa-play" style="color: #ffffff;"></i>
+            </button>
         </div>
     </div>
+    
+</EditForm>
 
-    <div class="sender">
-        <div class="message">
-            <p>Hello, What do you think about hanging out tonight?</p>
-        </div>
-    </div>
+<style>
+    .message-container input {
+        background-color: transparent;
+        flex: 1;
+        border: 0;
+        outline: none;
+        padding: 24px 20px;
+        font-size: 20px;
+    }
 
-    <div class="receiver">
-        <div class="message">
-            <p>Hey There!</p>
-        </div>
-    </div><div class="receiver">
-        <div class="message">
-            <p>Hey There! , Lorem ipsum dolor sit amet consectetur adipiscing elit</p>
-        </div>
-    </div>
-
-    <div class="sender">
-        <div class="message">
-            <p>Hello, What do you think about hanging out tonight?</p>
-        </div>
-    </div>
-
-    <div class="receiver">
-        <div class="message">
-            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore Lorem ipsum dolor sit amet,</p>
-        </div>
-    </div>
-</div>
-<div class="chat-footer">
-    <div action="" class="message-container">
-        <input type="text" placeholder="send message.."/>
-        <button type="submit"><i class="fa-solid fa-play" style="color: #ffffff;"></i></button>
-    </div>
-</div>
-
-
+    .message-container .input-text {
+        background-color: transparent;
+        flex: 1;
+        border: 0;
+        outline: none;
+        padding: 24px 20px;
+        font-size: 20px;
+    }
+</style>
 @code {
     [Parameter] public string UserProfilePhoto { get; set; }
+    [CascadingParameter] public Task<AuthenticationState> authenticationState { get; set; }
+    private List<IndividualChatDto> IndividualChats { get; set; } = [];
+    private IndividualChat IndividualChatModel { get; set; } = new IndividualChat();
+    public HubConnection? _hubConnection { get; set; }
+    private string _message;
+    
+    private string? receiverId;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMessages();
+        
+        _Receiver.OnReceiverIdChanged += OnReceiverIdChanged;
+        
+        var tokenModel = await LocalStorageService.GetModelFromToken();
+        var accessToken = tokenModel?.Token;
+
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            _navigation.NavigateTo("/login");
+            return;
+        }
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7201/chathub", options =>
+            {
+                options.AccessTokenProvider = () => Task.FromResult(accessToken);
+            })
+            .Build();
+
+        _hubConnection.On<IndividualChatDto>("ReceiveIndividualMessage", (individualChat) =>
+        {
+            IndividualChats.Add(individualChat);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await _hubConnection.StartAsync();
+
+        if (receiverId is not null)
+        {
+            var httpClient = new HttpClient();
+
+        var user = new RequestChatDto()
+        {
+            SenderId = ((await authenticationState).User).Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value,
+            ReceiverId = state.ReceiverId
+        };
+
+        var response = await httpClient.PostAsJsonAsync("https://localhost:7201/api/chats/individual", user);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            IndividualChats = await response.Content.ReadFromJsonAsync<List<IndividualChatDto>>() ?? new List<IndividualChatDto>();
+        }
+        else
+        {
+            Console.WriteLine($"Failed to load chats: {response.StatusCode}");
+        }
+        }
+        
+    }
+    
+    private async Task LoadMessages()
+    {
+        if (string.IsNullOrEmpty(receiverId))
+        {
+            return; // No receiver selected, don't load messages.
+        }
+
+        var httpClient = new HttpClient();
+        var user = new RequestChatDto()
+        {
+            SenderId = ((await authenticationState).User).Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value,
+            ReceiverId = receiverId // Use the updated ReceiverId
+        };
+
+        var response = await httpClient.PostAsJsonAsync("https://localhost:7201/api/chats/individual", user);
+
+        if (response.IsSuccessStatusCode)
+        {
+            IndividualChats = await response.Content.ReadFromJsonAsync<List<IndividualChatDto>>() ?? new List<IndividualChatDto>();
+        }
+        else
+        {
+            Console.WriteLine($"Failed to load chats: {response.StatusCode}");
+        }
+    }
+    
+    
+    private async void OnReceiverIdChanged()
+    {
+        receiverId = _Receiver.ReceiverId; // Update receiverId when it changes
+        await LoadMessages();
+        StateHasChanged(); // Trigger a re-render if needed
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe from event to avoid memory leaks
+        _Receiver.OnReceiverIdChanged -= OnReceiverIdChanged;
+    }
+
+    
+    public async void SendIndividualChat()
+    {
+        IndividualChatModel.ReceiverId = state.ReceiverId;
+        IndividualChatModel.SenderId =
+            ((await authenticationState).User).Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+
+        await _hubConnection!.SendAsync("AddIndividualChat", IndividualChatModel);
+
+        var data = new IndividualChatDto()
+        {
+            SenderId = IndividualChatModel.SenderId,
+            ReceiverId = IndividualChatModel.ReceiverId,
+            Message = IndividualChatModel.Message,
+            Date = IndividualChatModel.Date,
+            SenderName = (await authenticationState).User.Identity!.Name,
+            ReceiverName = state.Fullname
+        };
+        IndividualChats.Add(data);
+        IndividualChatModel = new();
+    }
+    
+    private bool IsConnected
+    {
+        get
+        {
+            return _hubConnection?.State == HubConnectionState.Connected;
+        }
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await _JSRuntime.InvokeVoidAsync("scrollToBottom", "chatArea");

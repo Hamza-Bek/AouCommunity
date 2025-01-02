@@ -6,6 +6,7 @@
 @inject LocalStorageService LocalStorageService
 @inject NavigationManager _navigation
 @inject AvailableUserState state
+@inject ReceiverChangeState _Receiver
 
 <AuthorizeView>
 <div class="contact-header">
@@ -23,11 +24,11 @@
     {
         if (UserProfilePhoto is null)
         {
-            <div class="contact-body">
+            <div class="contact-body" @onclick="() => SelectContact(contact)">
                 <div class="circle-profile">@contact.Fullname[0]</div>
-                <div class="contact-info">
+                <div class="contact-info" >
                     <div class="contact-user-name">
-                        @contact.Fullname
+                        <a @onclick="() => ChatUser(currentUser)">@contact.Fullname</a>
                     </div>
 
                     <div class="last-message">
@@ -125,18 +126,11 @@
               return _hubConnection?.State == HubConnectionState.Connected;
           }
       }
-      
-      public async void SendChatToGroup()
-      {
-          GroupChat.SenderId = (await authenticationState).User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier!).Value;
-          await _hubConnection!.SendAsync("SendMessageToGroup", GroupChat);
-          GroupChat = new();
-      }
 
       private void ChatUser(AvailableUserDto model)
       {
           state.SetStates(model.Fullname!, model.UserId!);
-          _navigation.NavigateTo("/individual");
+          //_navigation.NavigateTo("/individual");
       }
     
       private async Task<string> GetTokenFromLocalStorageAsync()
@@ -153,18 +147,9 @@
       
       private void SelectContact(AvailableUserDto contact)
       {
+          Console.WriteLine($"Selected Contact: {contact.Fullname}, {contact.UserId}");
+          state.SetStates(contact.Fullname, contact.UserId); // Update the state
           SelectedContact = contact;
+          _Receiver.ReceiverId = contact.UserId;
       }
-
-      public List<Contact> Contacts = new()
-      {
-          new Contact { Name = "Hamza" },
-          new Contact {Name = "Rasheed"}
-      };
-
-      public class Contact
-      {
-          public string Name { get; set; }
-      }
-
 }                    
