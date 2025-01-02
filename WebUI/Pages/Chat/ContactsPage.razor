@@ -1,3 +1,13 @@
+@using Application.DTOs.Request.Entities
+@using Application.Extension
+@using Domain.Models.ChatModels
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.SignalR.Client
+@inject LocalStorageService LocalStorageService
+@inject NavigationManager _navigation
+@inject AvailableUserState state
+
+<AuthorizeView>
 <div class="contact-header">
     <i class="fa-solid fa-backward"></i>
     <div class="search-bar">
@@ -6,43 +16,145 @@
     </div>
 </div>
 
-@foreach (var contact in Contacts)
+@foreach (var contact in AvailableUsers)
 {
-    if (UserProfilePhoto is null)
+    var currentUser = contact;
+    @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value)
     {
-        <div class="contact-body">
-            <div class="circle-profile">@contact.Name[0]</div>
-            <div class="contact-info">
-                <div class="contact-user-name">
-                    @contact.Name
-                </div>
+        if (UserProfilePhoto is null)
+        {
+            <div class="contact-body">
+                <div class="circle-profile">@contact.Fullname[0]</div>
+                <div class="contact-info">
+                    <div class="contact-user-name">
+                        @contact.Fullname
+                    </div>
 
-                <div class="last-message">
-                    Hey, Ready for tonight?
+                    <div class="last-message">
+                        Hey, Ready for tonight?
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-    else if (UserProfilePhoto is not null)
-    {
-        <div class="contact-body">
-            <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
-            <div class="contact-info">
-                <div class="contact-user-name">
-                    @contact.Name
-                </div>
+        }
+        else if (UserProfilePhoto is not null)
+        {
+            <div class="contact-body">
+                <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
+                <div class="contact-info">
+                    <div class="contact-user-name">
+                        @contact.Fullname
+                    </div>
 
-                <div class="last-message">
-                    Hey, Ready for tonight?
+                    <div class="last-message">
+                        Hey, Ready for tonight?
+                    </div>
                 </div>
             </div>
-        </div>
+        }    
     }
+    
 }
-
+</AuthorizeView>
 @code {
       [Parameter] 
       public string UserProfilePhoto { get; set; }
+      
+      [CascadingParameter] 
+      public Task<AuthenticationState> authenticationState { get; set; }
+      
+      public List<AvailableUserDto> AvailableUsers { get; set; } = [];
+      public List<GroupChatDto> GroupChats {get; set;} = [];
+      private GroupChat GroupChat = new();
+      private HubConnection? _hubConnection;
+      private AvailableUserDto SelectedContact;
+
+      protected override async Task OnInitializedAsync()
+      {
+          var tokenModel = await LocalStorageService.GetModelFromToken();
+          var accessToken = tokenModel?.Token;
+
+          if (string.IsNullOrEmpty(accessToken))
+          {
+              _navigation.NavigateTo("/login");
+              return;
+          }
+
+          _hubConnection = new HubConnectionBuilder()
+              .WithUrl("https://localhost:7201/chathub", options =>
+              {
+                  options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken);
+              }).Build();
+
+          _hubConnection.On<GroupChatDto>("ReceiverGroupMessages", (chat) =>
+          {
+              GroupChats.Add(chat);
+              InvokeAsync(() => StateHasChanged());
+          });
+
+          _hubConnection.On<List<AvailableUserDto>>("NotifyAllClients", (users) =>
+          {
+              AvailableUsers = users;
+              InvokeAsync(() => StateHasChanged());
+          });
+
+          await _hubConnection.StartAsync();
+          await GetCurrentUserAuthentication();
+
+          var httpClient = new HttpClient();
+          
+          GroupChats = await httpClient.GetFromJsonAsync<List<GroupChatDto>>("https://localhost:7201/api/chats/group-chats");
+          AvailableUsers = await httpClient.GetFromJsonAsync<List<AvailableUserDto>>("https://localhost:7201/api/chats/users");
+      }
+      
+      private async Task GetCurrentUserAuthentication()
+      {
+          var user = (await authenticationState).User;
+          if(user.Identity!.IsAuthenticated == true)
+          {
+              await _hubConnection!.SendAsync("AddAvailableUserAsync", new AvailableUser()
+              {
+                  UserId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value
+              });
+          }
+      }
+      
+      private bool IsConnected
+      {
+          get
+          {
+              return _hubConnection?.State == HubConnectionState.Connected;
+          }
+      }
+      
+      public async void SendChatToGroup()
+      {
+          GroupChat.SenderId = (await authenticationState).User.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier!).Value;
+          await _hubConnection!.SendAsync("SendMessageToGroup", GroupChat);
+          GroupChat = new();
+      }
+
+      private void ChatUser(AvailableUserDto model)
+      {
+          state.SetStates(model.Fullname!, model.UserId!);
+          _navigation.NavigateTo("/individual");
+      }
+    
+      private async Task<string> GetTokenFromLocalStorageAsync()
+      {
+          var tokenModel = await LocalStorageService.GetModelFromToken();
+          return tokenModel?.Token ?? string.Empty;
+      }
+    
+      private async Task<string?> GetUserIdAsync()
+      {
+          var userId = await LocalStorageService.GetUserIdFromToken();
+          return userId;
+      }
+      
+      private void SelectContact(AvailableUserDto contact)
+      {
+          SelectedContact = contact;
+      }
 
       public List<Contact> Contacts = new()
       {
