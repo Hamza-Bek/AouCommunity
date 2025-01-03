@@ -34,6 +34,10 @@
 }
 
 .chat-area {
+    background-image: linear-gradient(
+            rgba(255, 255, 255, 0.5), /* Adjust opacity */
+            rgba(255, 255, 255, 0.5)
+    ),url("img/chat-bg.jpg");
     flex: 1; /* This makes the content take up the remaining space */
     overflow-y: auto; /* Scrollable content if it overflows */
     padding: 10px;
