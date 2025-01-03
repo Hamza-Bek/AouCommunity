@@ -13,3 +13,4 @@ function toggleSidebar() {
     chat.classList.toggle('hide');
 }
 
+
