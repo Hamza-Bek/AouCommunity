@@ -59,6 +59,11 @@ html, body{
     width: 100%;
 }
 
+.navbar-container.open {
+    display: block;
+    display: flex;
+    margin: 1rem;
+}
 
 .navbar-container {
     display: flex;
@@ -70,7 +75,8 @@ html, body{
     width: 2%;
     max-height: fit-content;
     padding:1rem;
-    margin: 1%;
+    margin-top:1rem;
+    margin-left: 1rem;
 }
 
 .navbar-container i {

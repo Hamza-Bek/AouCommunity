@@ -11,6 +11,8 @@ function toggleSidebar() {
     sidebar.classList.toggle('open');
     const chat = document.getElementById("chat");
     chat.classList.toggle('hide');
+    const navbar = document.getElementById('navbar');
+    navbar.classList.toggle('open');
 }
 
 
