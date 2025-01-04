@@ -33,6 +33,13 @@ html, body{
     float: left;
 }
 
+.contact-container {
+    position: relative; /* This ensures absolute positioning inside it */
+}
+
+.contact-body {
+    position: relative; /* Allow child elements to be positioned relative to this */
+}
 
 .contact-container {
     display: flex;
@@ -92,6 +99,7 @@ html, body{
 @media (max-width: 1100px) {
     .chat-container {
         width: 98%;
+        margin: 1%;
     }
 
     .contact-container {

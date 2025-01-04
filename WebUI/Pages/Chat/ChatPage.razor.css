@@ -35,8 +35,8 @@
 
 .chat-area {
     background-image: linear-gradient(
-            rgba(255, 255, 255, 0.5), /* Adjust opacity */
-            rgba(255, 255, 255, 0.5)
+            rgba(255, 255, 255, 0.95), /* Adjust opacity */
+            rgba(255, 255, 255, 0.95)
     ),url("img/chat-bg.jpg");
     flex: 1; /* This makes the content take up the remaining space */
     overflow-y: auto; /* Scrollable content if it overflows */
@@ -71,7 +71,6 @@
 .chat-footer {
     display: flex;
     padding: 10px;
-    border-top: 1px solid #ccc;
 }
 
 .message-container {
@@ -156,8 +155,8 @@
     }
 
     .message-container input {
-        padding: 18px 20px;
-        font-size: 18px;
+        margin: 1%;
+        padding: 1rem;
     }
     
     .message-container button {
