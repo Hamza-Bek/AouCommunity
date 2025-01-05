@@ -99,17 +99,17 @@
 }
 
 .circle {
-    position: absolute; 
+    position: absolute;
     width: 50px;
     height: 50px;
     background:#012e50;
-    border-radius: 50%; 
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    bottom: 10px; 
-    right: 10px;  
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+    bottom: 10px;
+    right: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 1100px) {
@@ -121,7 +121,7 @@
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-    
+
     .contact-body {
         flex-direction: row;
         justify-content: flex-start;
@@ -142,13 +142,13 @@
         padding: 0.25rem 0.5rem;
     }
 
-    
+
 }
 
 /* Small mobile responsiveness */
 @media (max-width: 480px) {
 
-   
+
 
     .contact-container {
         display: none;

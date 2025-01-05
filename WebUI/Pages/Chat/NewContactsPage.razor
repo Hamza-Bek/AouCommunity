@@ -1,0 +1,30 @@
+@using Application.DTOs.Request.Entities
+@using Application.Extension
+@using Domain.Models.ChatModels
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.SignalR.Client
+@inject LocalStorageService LocalStorageService
+@inject NavigationManager _navigation
+@inject AvailableUserState state
+@inject ReceiverChangeState _Receiver
+
+<AuthorizeView>
+<div class="contact-header">
+    <i class="fa-solid fa-backward"></i>
+    <div class="search-bar">
+        <input type="text" placeholder="Find a mate by id..." />
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+</div>
+
+  
+   
+
+    <div class="new-contact">
+        <div class="circle"><i class="fa-solid fa-user-plus" style="color: #ffffff;"></i></div>
+    </div>
+</AuthorizeView>
+@code {
+    [Parameter] public string ProfilePhotoUrl { get; set; }
+     
+}                    

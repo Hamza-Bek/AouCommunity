@@ -20,25 +20,20 @@ const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const chatDisplay = document.getElementById('chatDisplay');
 
-sendButton.addEventListener('click', () => {
-    const message = messageInput.value.trim();
-    if (message) {
-        // Add the message to the chat display
-        const messageElement = document.createElement('div');
-        messageElement.textContent = message;
-        chatDisplay.appendChild(messageElement);
+function showPage(page) {
+    // Hide all pages
+    document.getElementById('myContactsPage').style.display = 'none';
+    document.getElementById('newContactsPage').style.display = 'none';
 
-        // Clear the input field
-        messageInput.value = '';
-
-        // Keep the focus on the input field
-        messageInput.focus();
+    // Show the selected page
+    if (page === 'myContacts') {
+        document.getElementById('myContactsPage').style.display = 'block';
+    } else if (page === 'newContact') {
+        document.getElementById('newContactsPage').style.display = 'block';
     }
-});
+}
 
-// Optional: Send message when pressing Enter
-messageInput.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-        sendButton.click();
-    }
+// Optionally: Set default page
+document.addEventListener('DOMContentLoaded', () => {
+    showPage('myContacts');
 });

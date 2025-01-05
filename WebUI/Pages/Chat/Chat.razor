@@ -3,16 +3,23 @@
 <div class="main-container">
     <div class="second-container">
         <div class="navbar-container" id="navbar">
-            <i class="fa-solid fa-house" style="color: #ffffff;"></i>
+            <a href="/" style="color: #ffffff; text-decoration: none;">
+                <i class="fa-solid fa-house"></i>
+            </a>
             <div class="line"></div>
-            <i class="fa-solid fa-address-book" style="color: #ffffff;"></i>
+            <i onclick="showPage('myContacts')" class="fa-solid fa-address-book" style="color: #ffffff;"></i>
             <div class="line"></div>
-            <i class="fa-solid fa-users" style="color: #ffffff;"></i>
+            <i onclick="showPage('newContact')" class="fa-solid fa-users" style="color: #ffffff;"></i>
             <div class="line"></div>
-            <i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
+            <i class="fa-solid fa-bell " style="color: #ffffff;"></i>
         </div>
         <div class="contact-container" id="contact">
-            <ContactsPage/>
+            <div id="myContactsPage">
+                <MyContactsPage/>
+            </div>
+            <div id="newContactsPage" style="display: none;">
+                <NewContactsPage/>
+            </div>
         </div>
         <div class="chat-container" id="chat">
             <ChatPage/>

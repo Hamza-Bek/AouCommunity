@@ -64,6 +64,8 @@
     {
         var tokenModel = await LocalStorageService.GetModelFromToken();
         var accessToken = tokenModel?.Token;
+        
+        Console.Write(accessToken);
 
         if (string.IsNullOrEmpty(accessToken))
         {
@@ -121,9 +123,7 @@
     private void ChatUser(AvailableUserDto model)
     {
         state.SetStates(model.Fullname!, model.UserId!);
-        _navigation.NavigateTo("/chat");
+        _navigation.NavigateTo("/chat"); 
     }
-  
-    
    
 }
