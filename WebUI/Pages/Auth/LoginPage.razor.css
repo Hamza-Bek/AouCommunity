@@ -23,7 +23,16 @@ body::before {
     z-index: -1; /* Ensure the overlay is behind the form */
 }
 
-form {
+.container-fluid {
+    background: white;
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+.form {
     width: 35%;
     background-color: white;
     padding: 40px;

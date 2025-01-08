@@ -5,19 +5,19 @@
 @inject AuthenticationStateProvider AuthStateProvider
 
 <div class="container-fluid">
-    <form class="mx-auto" @onsubmit="HandleLogin">
+    <EditForm class="form" Model="@User"  OnValidSubmit="HandleLogin">
         <img src="img/aoulogo.png" alt="Welcome Image" class="welcome-image mb-3" />
         <h4 class="text-center">Welcome, Back!</h4>
         <div class="mb-3 mt-5">
             <label for="email" class="form-label">Email address</label>
-            <input type="email" class="form-control" id="email" @bind="email" aria-describedby="emailHelp" />
+            <InputText type="email" class="form-control" id="email" @bind-Value="email" aria-describedby="emailHelp" />
         </div>
         <div class="mb-3 mt-5">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" @bind="password" />
+            <InputText type="password" class="form-control" id="password" @bind-Value="password" />
         </div>
         <button type="submit" class="btn btn-primary mt-4">Login</button>
-    </form>
+    </EditForm>
 </div>
 
 
