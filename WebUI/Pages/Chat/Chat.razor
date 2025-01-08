@@ -11,7 +11,7 @@
             <div class="line"></div>
             <i onclick="showPage('newContact')" class="fa-solid fa-users" style="color: #ffffff;"></i>
             <div class="line"></div>
-            <i class="fa-solid fa-bell " style="color: #ffffff;"></i>
+            <i onclick="showPage('notification')" class="fa-solid fa-bell " style="color: #ffffff;"></i>
         </div>
         <div class="contact-container" id="contact">
             <div id="myContactsPage">
@@ -19,6 +19,9 @@
             </div>
             <div id="newContactsPage" style="display: none;">
                 <NewContactsPage/>
+            </div>
+            <div id="NotificationsPage" style="display: none;">
+                <NotificationPage/>
             </div>
         </div>
         <div class="chat-container" id="chat">

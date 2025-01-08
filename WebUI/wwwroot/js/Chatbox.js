@@ -24,12 +24,16 @@ function showPage(page) {
     // Hide all pages
     document.getElementById('myContactsPage').style.display = 'none';
     document.getElementById('newContactsPage').style.display = 'none';
+    document.getElementById('notification').style.display = 'none';
+    
 
     // Show the selected page
     if (page === 'myContacts') {
         document.getElementById('myContactsPage').style.display = 'block';
     } else if (page === 'newContact') {
         document.getElementById('newContactsPage').style.display = 'block';
+    } else if (page === 'NotificationsPage') {
+        document.getElementById('notification').style.display = 'block';
     }
 }
 
