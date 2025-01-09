@@ -179,23 +179,32 @@
     
     public async void SendIndividualChat()
     {
-        IndividualChatModel.ReceiverId = state.ReceiverId;
-        IndividualChatModel.SenderId =
-            ((await authenticationState).User).Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
-
-        await _hubConnection!.SendAsync("AddIndividualChat", IndividualChatModel);
-
-        var data = new IndividualChatDto()
+        try
         {
-            SenderId = IndividualChatModel.SenderId,
-            ReceiverId = IndividualChatModel.ReceiverId,
-            Message = IndividualChatModel.Message,
-            Date = IndividualChatModel.Date,
-            SenderName = (await authenticationState).User.Identity!.Name,
-            ReceiverName = state.Fullname
-        };
-        IndividualChats.Add(data);
-        IndividualChatModel = new();
+            if (!string.IsNullOrEmpty(IndividualChatModel.Message))
+            {
+                IndividualChatModel.ReceiverId = state.ReceiverId;
+                IndividualChatModel.SenderId =
+                    ((await authenticationState).User).Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+                await _hubConnection!.SendAsync("AddIndividualChat", IndividualChatModel);
+
+                var data = new IndividualChatDto()
+                {
+                    SenderId = IndividualChatModel.SenderId,
+                    ReceiverId = IndividualChatModel.ReceiverId,
+                    Message = IndividualChatModel.Message,
+                    Date = IndividualChatModel.Date,
+                    SenderName = (await authenticationState).User.Identity!.Name,
+                    ReceiverName = state.Fullname
+                };
+                IndividualChats.Add(data);
+                IndividualChatModel = new();
+            }
+        }
+        catch
+        {
+            Console.WriteLine("can't send message");
+        }
     }
     
     private bool IsConnected
