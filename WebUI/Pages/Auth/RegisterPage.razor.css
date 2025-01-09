@@ -21,7 +21,14 @@ body::before {
     z-index: -1; /* Ensure the overlay is behind the form */
 }
 
-form {
+.container-fluid {
+    background: white;
+    width: fit-content;
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+.form {
     width: 100%; /* Use 100% for flexibility */
     max-width: 400px; /* Set a maximum width to maintain form size */
     max-height: 90vh; /* Prevent the form from exceeding a certain height */

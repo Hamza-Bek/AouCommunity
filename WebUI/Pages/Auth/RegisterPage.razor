@@ -4,15 +4,15 @@
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
 
-
-    <form class="mx-auto" @onsubmit="HandleRegistration">
+<div class="container-fluid">
+    <EditForm class="form" Model="@NewUser" OnValidSubmit="HandleRegistration">
         <div class="container-fluid">
             <img src="img/aoulogo.png" alt="Welcome Image" class="welcome-image mb-3" />
             <h4 class="text-center">Create an Account</h4>
 
             <div class="mb-3 mt-5">
                 <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" @bind="username" />
+                <InputText type="text" class="form-control" id="username" @bind-Value="username" />
                 @if (!string.IsNullOrEmpty(usernameError))
                 {
                     <small class="text-danger">@usernameError</small>
@@ -21,7 +21,7 @@
 
             <div class="mb-3 mt-5">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" @bind="email" />
+                <InputText type="email" class="form-control" id="email" @bind-Value="email" />
                 @if (!string.IsNullOrEmpty(emailError))
                 {
                     <small class="text-danger">@emailError</small>
@@ -30,7 +30,7 @@
 
             <div class="mb-3 mt-5">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" @bind="password" />
+                <InputText type="password" class="form-control" id="password" @bind-Value="password" />
                 @if (!string.IsNullOrEmpty(passwordError))
                 {
                     <small class="text-danger">@passwordError</small>
@@ -39,7 +39,7 @@
 
             <div class="mb-3 mt-5">
                 <label for="confirmPassword" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="confirmPassword" @bind="confirmPassword" />
+                <InputText type="password" class="form-control" id="confirmPassword" @bind-Value="confirmPassword" />
                 @if (!string.IsNullOrEmpty(confirmPasswordError))
                 {
                     <small class="text-danger">@confirmPasswordError</small>
@@ -48,8 +48,8 @@
 
             <button type="submit" class="btn btn-primary mt-4">Register</button>
         </div>
-        </form>
-
+        </EditForm>
+</div>
 
 @code {
     private CreateAccountDto NewUser { get; set; } = new CreateAccountDto();
@@ -87,11 +87,6 @@
                 });
             }
             Navigation.NavigateTo("/verify/account");
-        }
-        else
-        {
-            // Show error message
-            Console.WriteLine($"Registration failed: {result.Message}");
         }
         
         usernameError = emailError = passwordError = confirmPasswordError = string.Empty;
@@ -135,13 +130,6 @@
         {
             confirmPasswordError = "Passwords do not match.";
             isValid = false;
-        }
-
-        // If form is valid, proceed with registration
-        if (isValid)
-        {
-            Console.WriteLine($"Username: {username}, Email: {email}, Password: {password}, Confirm Password: {confirmPassword}");
-            // Perform the registration process here
         }
     }
 }
