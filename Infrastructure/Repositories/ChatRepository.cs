@@ -138,6 +138,7 @@ namespace Infrastructure.Repositories
 
         public async Task AddIndividualChatAsync(IndividualChat model)
         {
+            model.Date = DateTime.UtcNow;
             _context.IndividualChats.Add(model);
             await _context.SaveChangesAsync();
         }

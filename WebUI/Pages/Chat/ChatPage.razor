@@ -85,7 +85,6 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadMessages();
-        
         _Receiver.OnReceiverIdChanged += OnReceiverIdChanged;
         
         var tokenModel = await LocalStorageService.GetModelFromToken();
@@ -165,14 +164,13 @@
     
     private async void OnReceiverIdChanged()
     {
-        receiverId = _Receiver.ReceiverId; // Update receiverId when it changes
+        receiverId = _Receiver.ReceiverId;
         await LoadMessages();
-        StateHasChanged(); // Trigger a re-render if needed
+        StateHasChanged(); 
     }
 
     public void Dispose()
     {
-        // Unsubscribe from event to avoid memory leaks
         _Receiver.OnReceiverIdChanged -= OnReceiverIdChanged;
     }
 

@@ -13,6 +13,6 @@ namespace Application.DTOs.Request.Entities
         public string? ReceiverId { get; set; }
         public string? ReceiverName { get; set; }
         public string? Message { get; set; }
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateTime Date { get; set; } = DateTime.UtcNow;
     }
 }
