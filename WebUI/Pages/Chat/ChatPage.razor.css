@@ -127,11 +127,30 @@
 }
 
 .chat-container.hide {
-    display: none; /* Hidden when screen width is below 1100px */
+    display: none; 
     width: 0;
 }
 
+.no-message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
 
+.no-messages {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    background: #E8E8E8;
+    border-radius: 10px;
+}
+
+.no-messages p {
+    margin: 0; 
+    text-align: center; 
+    padding: .3rem;
+}
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {

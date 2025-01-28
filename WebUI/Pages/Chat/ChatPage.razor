@@ -43,7 +43,8 @@
     </div>
     
     <div class="chat-area" id="chatArea">
-    
+    @if (IndividualChats.Count != 0)
+    {
         @foreach (var chat in IndividualChats)
         {
             bool isSender = chat.SenderName == context.User.Identity!.Name;
@@ -55,6 +56,19 @@
                 </div>
             </div>
         }
+    }
+    else
+    {
+        <div class="no-message-container">
+            <div class="no-messages">
+                <div class="no-message-content">
+                    <p>No messages to show..</p>
+                </div>
+            </div>
+        </div>
+ 
+    }
+      
    
 
 
