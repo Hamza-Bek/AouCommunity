@@ -3,6 +3,8 @@
 @using Domain.Models.ChatModels
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.SignalR.Client
+@using WebUI.StateManagementServices
+@inject  SelectedUserState _SelectedUserState
 @inject LocalStorageService LocalStorageService
 @inject NavigationManager _navigation
 @inject AvailableUserState state
@@ -22,7 +24,7 @@
     var currentUser = contact;
     @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value)
     {
-        if (UserProfilePhoto is null)
+        @if (UserProfilePhoto is null)
         {
             <div class="contact-body" @onclick="() => SelectContact(contact)">
                 <div class="circle-profile">@contact.Fullname[0]</div>
@@ -39,7 +41,7 @@
         }
         else if (UserProfilePhoto is not null)
         {
-            <div class="contact-body">
+            <div class="contact-body" @onclick="() => SelectContact(contact)">
                 <img src="Machine Made High Quality Carpet.png" class="contact-profile-photo" />
                 <div class="contact-info">
                     <div class="contact-user-name">
@@ -134,7 +136,6 @@
       private void ChatUser(AvailableUserDto model)
       {
           state.SetStates(model.Fullname!, model.UserId!);
-          //_navigation.NavigateTo("/individual");
       }
     
       private async Task<string> GetTokenFromLocalStorageAsync()
@@ -155,5 +156,7 @@
           state.SetStates(contact.Fullname, contact.UserId); // Update the state
           SelectedContact = contact;
           _Receiver.ReceiverId = contact.UserId;
+          _SelectedUserState.ReceiverId = contact.UserId;
       }
+     
 }                    

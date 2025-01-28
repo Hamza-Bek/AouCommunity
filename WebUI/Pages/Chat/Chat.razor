@@ -1,4 +1,6 @@
 @page "/chat"
+@using Microsoft.IdentityModel.Tokens
+@inject SelectedUserState _SelectedUserState
 
 <div class="main-container">
     <div class="second-container">
@@ -24,13 +26,27 @@
                 <NotificationPage/>
             </div>
         </div>
-        <div class="chat-container" id="chat">
-            <ChatPage/>
-        </div>
+        @if (!string.IsNullOrEmpty(_SelectedUserState.ReceiverId))
+        {
+            <div class="chat-container" id="chat">
+                <ChatPage ReceiverId="_receiverId"/>
+                </div>
+        }
+        
     </div>
 </div>
 
 
 @code {
+    private string _receiverId;
     
+    protected override void OnInitialized()
+    {
+        _SelectedUserState.OnChange += StateHasChanged;
+    }
+
+    private void Dispose()
+    {
+        _SelectedUserState.OnChange -= StateHasChanged;
+    }
 }

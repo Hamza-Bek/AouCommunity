@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories;
 
 public class AccountRepository : IAccountRepository
 {
-    private const int TokenExpiryMinutes = 1;
+    private const int TokenExpiryMinutes = 30;
     private const string SecretKey = "nM8mgxRKlkusaRsPzauqBsHDf1LmoYBukQ6JY5XaA_4=";
     private static readonly TimeSpan TokenLifeTime = TimeSpan.FromHours(8);
     private readonly UserManager<ApplicationUser> _userManager;

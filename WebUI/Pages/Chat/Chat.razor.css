@@ -177,7 +177,13 @@ html, body{
     }
 }
 
-/* Small mobile responsiveness */
+.unselected-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+}
+
 @media (max-width: 480px) {
 
     .message {

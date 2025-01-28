@@ -4,11 +4,12 @@
 @using Domain.Models.ChatModels
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.SignalR.Client
+@using WebUI.StateManagementServices
 @inject LocalStorageService LocalStorageService
 @inject NavigationManager _navigation
 @inject AvailableUserState state
 @inject ReceiverChangeState _Receiver
-
+@inject  SelectedUserState _SelectedUserState
 
 <body >
 
@@ -22,7 +23,7 @@
                     var currentUser = contact;
                     @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value)
                     {
-                        <div class="contact-item" @onclick="() => SelectContact(contact)">
+                        <div class="contact-item">
                             <a class="nav-link text-success" @onclick="() => ChatUser(currentUser)">@contact.Fullname</a>
                         </div>
                     }
@@ -48,17 +49,8 @@
     private HubConnection? _hubConnection;
     public List<GroupChatDto> GroupChats { get; set; } = [];
 
-    [CascadingParameter] public Task<AuthenticationState> authenticationState { get; set; }
-
-    private AvailableUserDto SelectedContact;
-
-    private void SelectContact(AvailableUserDto contact)
-    {
-        Console.WriteLine($"Selected Contact: {contact.Fullname}, {contact.UserId}");
-        state.SetStates(contact.Fullname, contact.UserId); // Update the state
-        SelectedContact = contact;
-        _Receiver.ReceiverId = contact.UserId;
-    }
+    [CascadingParameter] 
+    public Task<AuthenticationState> authenticationState { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -122,6 +114,7 @@
     private void ChatUser(AvailableUserDto model)
     {
         state.SetStates(model.Fullname!, model.UserId!);
+        _SelectedUserState.ReceiverId = model.UserId;
         _navigation.NavigateTo("/chat"); 
     }
    

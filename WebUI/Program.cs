@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using WebUI;
+using WebUI.StateManagementServices;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -18,6 +19,7 @@ builder.Services.AddScoped<HttpClientService>();
 builder.Services.AddScoped<CustomHttpHandler>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationProvider>();
 builder.Services.AddScoped<AvailableUserState>();
+builder.Services.AddScoped<SelectedUserState>();
 builder.Services.AddTransient<CustomHttpHandler>();
 
 builder.Services.AddCascadingAuthenticationState();
