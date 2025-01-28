@@ -15,6 +15,13 @@ function toggleSidebar() {
     navbar.classList.toggle('open');
 }
 
+function toggleChat() {
+    const chatbox = document.getElementById('chat');
+    chatbox.classList.toggle('open');
+    const sidebar = document.getElementById('contact');
+    sidebar.classList.toggle('hide');
+}
+
 
 const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');

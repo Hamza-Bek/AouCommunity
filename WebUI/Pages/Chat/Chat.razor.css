@@ -64,21 +64,6 @@ html, body{
 }
 
 
-.chat-container.hide {
-    display: none; /* Hidden when screen width is below 1100px */
-    width: 0;
-}
-
-.contact-container.open {
-    display: block; /* Hidden when screen width is below 1100px */
-    width: 100%;
-}
-
-.navbar-container.open {
-    display: block;
-    display: flex;
-    margin: 1rem;
-}
 
 .navbar-container {
     display: flex;
@@ -112,6 +97,22 @@ html, body{
 }
 
 @media (max-width: 1100px) {
+    .chat-container.hide {
+        display: none; /* Hidden when screen width is below 1100px */
+        width: 0;
+    }
+
+    .contact-container.open {
+        display: block; /* Hidden when screen width is below 1100px */
+        width: 100%;
+    }
+
+    .navbar-container.open {
+        display: block;
+        display: flex;
+        margin: 1rem;
+    }
+
     .chat-container {
         width: 98%;
         margin: 1%;
@@ -123,6 +124,22 @@ html, body{
 }
 
 @media (max-width: 1100px) {
+    .chat-container.hide {
+        display: none; /* Hidden when screen width is below 1100px */
+        width: 0;
+    }
+
+    .contact-container.open {
+        display: block; /* Hidden when screen width is below 1100px */
+        width: 100%;
+    }
+
+    .navbar-container.open {
+        display: block;
+        display: flex;
+        margin: 1rem;
+    }
+
     .chat-container {
         width: 98%;
     }
@@ -142,6 +159,21 @@ html, body{
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+    .chat-container.hide {
+        display: none; /* Hidden when screen width is below 1100px */
+        width: 0;
+    }
+
+    .contact-container.open {
+        display: block; /* Hidden when screen width is below 1100px */
+        width: 100%;
+    }
+
+    .navbar-container.open {
+        display: block;
+        display: flex;
+        margin: 1rem;
+    }
 
     .profile-photo {
         width: 30px;
@@ -193,6 +225,21 @@ html, body{
 }
 
 @media (max-width: 480px) {
+    .chat-container.hide {
+        display: none; /* Hidden when screen width is below 1100px */
+        width: 0;
+    }
+
+    .contact-container.open {
+        display: block; /* Hidden when screen width is below 1100px */
+        width: 100%;
+    }
+
+    .navbar-container.open {
+        display: block;
+        display: flex;
+        margin: 1rem;
+    }
 
     .message {
         font-size: small;

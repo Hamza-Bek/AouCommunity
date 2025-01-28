@@ -26,18 +26,21 @@
     {
         @if (UserProfilePhoto is null)
         {
-            <div class="contact-body" @onclick="() => SelectContact(contact)">
-                <div class="circle-profile">@contact.Fullname[0]</div>
-                <div class="contact-info" >
-                    <div class="contact-user-name">
-                        <a @onclick="() => ChatUser(currentUser)">@contact.Fullname</a>
-                    </div>
+            <div onclick="toggleSidebar()">
+                <div class="contact-body" @onclick="() => SelectContact(contact)">
+                    <div class="circle-profile">@contact.Fullname[0]</div>
+                    <div class="contact-info">
+                        <div class="contact-user-name">
+                            <a @onclick="() => ChatUser(currentUser)">@contact.Fullname</a>
+                        </div>
 
-                    <div class="last-message">
-                        Hey, Ready for tonight?
+                        <div class="last-message">
+                            Hey, Ready for tonight?
+                        </div>
                     </div>
                 </div>
             </div>
+               
         }
         else if (UserProfilePhoto is not null)
         {

@@ -147,9 +147,6 @@
 
 /* Small mobile responsiveness */
 @media (max-width: 480px) {
-
-   
-
     .contact-container {
         display: none;
     }
