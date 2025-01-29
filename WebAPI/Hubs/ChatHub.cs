@@ -36,11 +36,11 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
     
-    public async Task SendMessageToGroup(GroupChat Chat)
-    {
-        var SavedChat = await _chatRepository.AddChatToGroupAsync(Chat);
-        await Clients.All.SendAsync("ReceiveGroupMessages", SavedChat);
-    }
+    // public async Task SendMessageToGroup(GroupChat Chat)
+    // {
+    //     var SavedChat = await _chatRepository.AddChatToGroupAsync(Chat);
+    //     await Clients.All.SendAsync("ReceiveGroupMessages", SavedChat);
+    // }
 
     
     public async Task AddAvailableUserAsync(AvailableUser model)
@@ -75,8 +75,8 @@ public class ChatHub : Hub
         {
             SenderId = model.SenderId,
             ReceiverId = model.ReceiverId,
-            SenderName = getChats.Where(c => c.SenderId == model.SenderId).FirstOrDefault()!.SenderName,
-            ReceiverName = getChats.Where(c => c.ReceiverId == model.ReceiverId).FirstOrDefault()!.ReceiverName,
+            SenderName = getChats?.Where(c => c.SenderId == model.SenderId).FirstOrDefault()!.SenderName,
+            ReceiverName = getChats?.Where(c => c.ReceiverId == model.ReceiverId).FirstOrDefault()!.ReceiverName,
             Message = model.Message,
             Date = model.Date
         };

@@ -77,26 +77,6 @@ namespace Infrastructure.Repositories
             return list;
         }
 
-        public async Task<List<GroupChatDto>> GetGroupChatsAsync()
-        {
-            var List = new List<GroupChatDto>();
-            var chats = await _context.GroupChats.ToListAsync();
-
-            foreach(var c in chats)
-            {
-                List.Add(new GroupChatDto()
-                {
-                    SenderId = c.SenderId,
-                    DateTime = c.DateTime,
-                    Id = c.Id,
-                    Message = c.Message,
-                    SenderName = (await _userManager.FindByIdAsync(c.SenderId!))!.UserName,
-                });
-            }
-
-            return List;
-        }            
-
         public async Task<List<AvailableUserDto>> RemoveUserAsync(string userId)
         {
             var user = await _context.AvailableUsers.FirstOrDefaultAsync(u => u.UserId == userId);
@@ -119,21 +99,6 @@ namespace Infrastructure.Repositories
             }
 
             return List;
-        }
-
-        public async Task<GroupChatDto> AddChatToGroupAsync(GroupChat model)
-        {
-            var entity = _context.GroupChats.Add(model).Entity;
-            await _context.SaveChangesAsync();
-
-            return new GroupChatDto()
-            {
-                SenderId = entity.SenderId,
-                SenderName = (await _userManager.FindByIdAsync(entity.SenderId!))!.UserName,
-                DateTime = entity.DateTime,
-                Id = entity.Id,
-                Message = entity.Message, 
-            };
         }
 
         public async Task AddIndividualChatAsync(IndividualChat model)

@@ -24,18 +24,6 @@ namespace WebAPI.Controllers
             return NoContent();
         }
 
-        //[HttpGet("chat")]
-        //public async Task<ActionResult<List<GroupChat>>> GetChatsAsync()
-        //    => Ok(await _chatRepository.GetGroupChatsAsync());
-
-        //[HttpGet("user")]
-        //public async Task<IActionResult> GetAvailableUsersAsync() 
-        //    => Ok(await _chatRepository.GetAvailableUsersAsync());
-
-
-        [HttpGet("group-chats")]
-        public async Task<IActionResult> GetGroupChatsAsync() => Ok(await _chatRepository.GetGroupChatsAsync());
-
         [HttpGet("users")]
         public async Task<IActionResult> GetUsersAsync() => Ok(await _chatRepository.GetAvailableUsersAsync());
 

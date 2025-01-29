@@ -94,12 +94,7 @@
               {
                   options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken);
               }).Build();
-
-          _hubConnection.On<GroupChatDto>("ReceiverGroupMessages", (chat) =>
-          {
-              GroupChats.Add(chat);
-              InvokeAsync(() => StateHasChanged());
-          });
+          
 
           _hubConnection.On<List<AvailableUserDto>>("NotifyAllClients", (users) =>
           {
@@ -111,8 +106,6 @@
           await GetCurrentUserAuthentication();
 
           var httpClient = new HttpClient();
-          
-          GroupChats = await httpClient.GetFromJsonAsync<List<GroupChatDto>>("https://localhost:7201/api/chats/group-chats");
           AvailableUsers = await httpClient.GetFromJsonAsync<List<AvailableUserDto>>("https://localhost:7201/api/chats/users");
       }
       

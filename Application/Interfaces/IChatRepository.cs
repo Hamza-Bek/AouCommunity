@@ -11,13 +11,9 @@ namespace Application.Interfaces
     public interface IChatRepository
     {
         Task<List<AvailableUserDto>> AddAvailableUserAsync(AvailableUser model);
-        Task<GroupChatDto> AddChatToGroupAsync(GroupChat model);
         Task AddIndividualChatAsync(IndividualChat model);
-
-        Task<List<GroupChatDto>> GetGroupChatsAsync();
         Task<List<AvailableUserDto>> GetAvailableUsersAsync();
         Task<List<IndividualChatDto>> GetIndividualChatsAsync(RequestChatDto model);
-        
         Task<List<AvailableUserDto>> RemoveUserAsync(string userId);
     }
 }
