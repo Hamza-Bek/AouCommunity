@@ -194,12 +194,6 @@ else
         await LoadMessages();
         StateHasChanged(); 
     }
-
-    public void Dispose()
-    {
-        _Receiver.OnReceiverIdChanged -= OnReceiverIdChanged;
-    }
-
     
     public async void SendIndividualChat()
     {

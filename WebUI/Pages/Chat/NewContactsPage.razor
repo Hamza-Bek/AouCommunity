@@ -12,35 +12,34 @@
 <AuthorizeView>
     @foreach (var contact in AvailableUsers)
     {
-        var currentUser = contact;
-        @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value)
-        {
-            @if (UserProfilePhoto is null)
-            {
-                <div>
-                    <div class="contact-body">
-                        <div class="circle-profile">@contact.Fullname[0]</div>
-                        <div class="contact-info">
-                            <div class="contact-user-name">
-                                <a @onclick="() => ChatUser(currentUser)">@contact.Fullname</a>
-                            </div>
-
-                            <div class="last-message">
-                                Hey, Ready for tonight?
-                            </div>
-                        </div>
-                    </div>
+    var currentUser = contact;
+    @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value)
+    {
+    @if (UserProfilePhoto is null)
+    {
+    <div @onclick="() => OnSendRequestClicked(contact.UserId)">
+        <div class="contact-body">
+            <div class="circle-profile">@contact.Fullname[0]</div>
+            <div class="contact-info">
+                <div class="contact-user-name">
+                    <a>@contact.Fullname</a>
                 </div>
 
-            }
-        }
-
+                <div class="last-message">
+                    Hey, Ready for tonight?
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    }
     }
 
     <div class="new-contact">
         <div class="circle"><i class="fa-solid fa-user-plus" style="color: #ffffff;"></i></div>
     </div>
 </AuthorizeView>
+
 
 @code {
    
@@ -113,16 +112,49 @@
             _statusMessage = $"Error: {ex.Message}";
         }
     }
-
-    public async Task SendThreadRequestAsync(string senderId, string receiverId)
+    
+    private async Task SendRequest(string receiverId)
     {
-        var threadRequest = new ThreadRequest
+        var senderId = (await authenticationState).User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(senderId) || string.IsNullOrEmpty(receiverId))
+        {
+            _statusMessage = "Sender ID and Receiver ID are required.";
+            return;
+        }
+
+        try
+        {
+            await SendThreadRequestAsync(senderId, receiverId);
+            _statusMessage = "Thread request sent successfully!";
+        }
+        catch (Exception ex)
+        {
+            _statusMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task OnSendRequestClicked(string receiverId)
+    {
+        await SendRequest(receiverId);
+    }
+
+    private async Task SendThreadRequestAsync(string senderId, string receiverId)
+    {
+        try
+        {
+            var threadRequest = new ThreadRequest
             {
                 SenderId = senderId,
                 ReceiverId = receiverId
             };
 
-        await _hubConnection.InvokeAsync("SendThreadRequestAsync", threadRequest);
+            await _hubConnection.SendAsync("SendThreadRequest", threadRequest);
+        }
+        catch (Exception ex)
+        {
+            _statusMessage = $"Error: {ex.Message}";
+        }
     }
 
     private async Task GetCurrentUserAuthentication()
@@ -136,15 +168,5 @@
                 });
         }
     }
-
-    private async void ChatUser(AvailableUserDto model)
-    {
-        state.SetStates(model.Fullname!, model.UserId!);
-
-        var currentUser = (await authenticationState).User;
-        var senderId = currentUser.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value;
-
-        // Send a connection request
-        SendRequest();
-    }
+    
 }                    

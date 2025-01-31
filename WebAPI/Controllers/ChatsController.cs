@@ -30,5 +30,12 @@ namespace WebAPI.Controllers
         [HttpPost("individual")]
         public async Task<IActionResult> GetIndividualChatsAsync(RequestChatDto model) =>
             Ok(await _chatRepository.GetIndividualChatsAsync(model));
+
+        [HttpPost("thread/request")]
+        public async Task<IActionResult> RequestThreadAsync(ThreadRequest model)
+        {
+            await _chatRepository.SendThreadRequestAsync(model);
+            return NoContent();
+        }
     }
 }

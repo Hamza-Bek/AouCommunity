@@ -84,6 +84,6 @@ public class ChatHub : Hub
     public async Task SendThreadRequest(ThreadRequest model)
     {
         await _chatRepository.SendThreadRequestAsync(model);
-        await Clients.User(model.ReceiverId).SendAsync("ReceiveThreadRequest", model);
+        await Clients.User(model.ReceiverId!).SendAsync("ReceiveThreadRequest", model);
     }
 }

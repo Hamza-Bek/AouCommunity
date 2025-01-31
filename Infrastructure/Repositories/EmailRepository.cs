@@ -31,7 +31,7 @@ public class EmailRepository : IEmailRepository
         email.Subject = mailRequest.Subject;
         var builder = new BodyBuilder();
 
-        builder.HtmlBody = $" Your verification code is {user.VerificationCode} , Please do not share it!";
+        builder.HtmlBody = $" Your verification code is {user?.VerificationCode} , Please do not share it!";
         
         email.Body = builder.ToMessageBody();
 
