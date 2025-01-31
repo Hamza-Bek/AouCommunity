@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Request.Entities;
 using Application.Interfaces;
+using Domain.Enums;
 using Domain.Models;
 using Domain.Models.ChatModels;
 using Infrastructure.Data;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Thread = Domain.Models.ChatModels.Thread;
 
 namespace Infrastructure.Repositories
 {
@@ -101,17 +103,17 @@ namespace Infrastructure.Repositories
             return List;
         }
 
-        public async Task AddIndividualChatAsync(IndividualChat model)
+        public async Task AddIndividualChatAsync(Thread model)
         {
             model.Date = DateTime.UtcNow;
-            _context.IndividualChats.Add(model);
+            _context.Threads.Add(model);
             await _context.SaveChangesAsync();
         }
 
         public async Task<List<IndividualChatDto>> GetIndividualChatsAsync(RequestChatDto model)
         {
             var ChatList = new List<IndividualChatDto>();
-            var chats = await _context.IndividualChats
+            var chats = await _context.Threads
                 .Where(s => s.SenderId == model.SenderId && s.ReceiverId == model.ReceiverId || s.SenderId == model.ReceiverId && s.ReceiverId == model.SenderId)
                 .ToListAsync();
 
@@ -132,6 +134,30 @@ namespace Infrastructure.Repositories
                 return ChatList;
             }
             return null;
+        }
+
+        public async Task SendThreadRequestAsync(ThreadRequest model)
+        {
+            var sender = await _userManager.FindByIdAsync(model.SenderId);
+            if(sender is null)
+            {
+                throw new Exception("Sender not found.");
+            }
+
+            var receiver = await _userManager.FindByIdAsync(model.ReceiverId);
+            if (receiver is null)
+            {
+                throw new Exception("Receiver not found.");
+            }           
+            
+            var request = new ThreadRequest()
+            {                
+                SenderId = model.SenderId,
+                ReceiverId = model.ReceiverId,
+            };
+
+            await _context.ThreadRequests.AddAsync(request);
+            await _context.SaveChangesAsync();
         }
     }
 }

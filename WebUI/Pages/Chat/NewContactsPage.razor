@@ -10,18 +10,141 @@
 @inject ReceiverChangeState _Receiver
 
 <AuthorizeView>
-<div class="contact-header">
-    <i class="fa-solid fa-backward"></i>
-    <div class="search-bar">
-        <input type="text" placeholder="Find a mate by id..." />
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </div>
-</div>
+    @foreach (var contact in AvailableUsers)
+    {
+        var currentUser = contact;
+        @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value)
+        {
+            @if (UserProfilePhoto is null)
+            {
+                <div>
+                    <div class="contact-body">
+                        <div class="circle-profile">@contact.Fullname[0]</div>
+                        <div class="contact-info">
+                            <div class="contact-user-name">
+                                <a @onclick="() => ChatUser(currentUser)">@contact.Fullname</a>
+                            </div>
+
+                            <div class="last-message">
+                                Hey, Ready for tonight?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        }
+
+    }
+
     <div class="new-contact">
         <div class="circle"><i class="fa-solid fa-user-plus" style="color: #ffffff;"></i></div>
     </div>
 </AuthorizeView>
+
 @code {
-    [Parameter] public string ProfilePhotoUrl { get; set; }
+   
+    private string _senderId = string.Empty;
+    private string _receiverId = string.Empty;
+    private string _statusMessage = string.Empty;
+    private HubConnection _hubConnection;
+   
+    [Parameter]
+    public string UserProfilePhoto { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }   
     
+    private AvailableUserDto SelectedContact;
+    public List<AvailableUserDto> AvailableUsers { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tokenModel = await LocalStorageService.GetModelFromToken();
+        var accessToken = tokenModel?.Token;
+
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            _navigation.NavigateTo("/login");
+            return;
+        }
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7201/chathub", options =>
+            {
+                options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken);
+            }).Build();
+
+
+        _hubConnection.On<List<AvailableUserDto>>("NotifyAllClients", (users) =>
+        {
+            AvailableUsers = users;
+            InvokeAsync(() => StateHasChanged());
+        });
+
+        _hubConnection.On<ThreadRequest>("ReceiveThreadRequest", (request) =>
+       {
+           Console.WriteLine($"Received thread request from {request.SenderId}");
+           InvokeAsync(() => StateHasChanged());
+       });
+
+        await _hubConnection.StartAsync();
+        await GetCurrentUserAuthentication();
+
+        var httpClient = new HttpClient();
+        AvailableUsers = await httpClient.GetFromJsonAsync<List<AvailableUserDto>>("https://localhost:7201/api/chats/users");
+    }
+
+    private async Task SendRequest()
+    {
+        if (string.IsNullOrEmpty(_senderId) || string.IsNullOrEmpty(_receiverId))
+        {
+            _statusMessage = "Sender ID and Receiver ID are required.";
+            return;
+        }
+
+        try
+        {
+            await SendThreadRequestAsync(_senderId, _receiverId);
+            _statusMessage = "Thread request sent successfully!";
+        }
+        catch (Exception ex)
+        {
+            _statusMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    public async Task SendThreadRequestAsync(string senderId, string receiverId)
+    {
+        var threadRequest = new ThreadRequest
+            {
+                SenderId = senderId,
+                ReceiverId = receiverId
+            };
+
+        await _hubConnection.InvokeAsync("SendThreadRequestAsync", threadRequest);
+    }
+
+    private async Task GetCurrentUserAuthentication()
+    {
+        var user = (await authenticationState).User;
+        if (user.Identity!.IsAuthenticated == true)
+        {
+            await _hubConnection!.SendAsync("AddAvailableUserAsync", new AvailableUser()
+                {
+                    UserId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value
+                });
+        }
+    }
+
+    private async void ChatUser(AvailableUserDto model)
+    {
+        state.SetStates(model.Fullname!, model.UserId!);
+
+        var currentUser = (await authenticationState).User;
+        var senderId = currentUser.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value;
+
+        // Send a connection request
+        SendRequest();
+    }
 }                    

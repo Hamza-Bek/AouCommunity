@@ -2,6 +2,7 @@ using Domain.Models;
 using Domain.Models.ChatModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Thread = Domain.Models.ChatModels.Thread;
 
 namespace Infrastructure.Data;
 
@@ -17,10 +18,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Announcement> Announcements { get; set; }
     public DbSet<Offer> Offers { get; set; }
     public DbSet<Post> Posts { get; set; }
-    public DbSet<GroupChat> GroupChats { get; set; }
     public DbSet<AvailableUser> AvailableUsers { get; set; }
-    public DbSet<IndividualChat> IndividualChats { get; set; }
-    
+    public DbSet<Thread> Threads { get; set; }
+    public DbSet<ThreadRequest> ThreadRequests { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

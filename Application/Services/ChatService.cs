@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Thread = Domain.Models.ChatModels.Thread;
 
 namespace Application.Services
 {
@@ -25,12 +26,7 @@ namespace Application.Services
             throw new NotImplementedException();
         }
 
-        public Task<GroupChatDto> AddChatToGroupAsync(GroupChat model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddIndividualChatAsync(IndividualChat model)
+        public Task AddIndividualChatAsync(Thread model)
         {
             throw new NotImplementedException();
         }
@@ -60,6 +56,11 @@ namespace Application.Services
             }
 
             return new List<AvailableUserDto>();
+        }
+
+        public Task SendThreadRequestAsync(ThreadRequest model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

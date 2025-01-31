@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,6 @@ namespace Application.DTOs.Request.Entities
         public string? ReceiverName { get; set; }
         public string? Message { get; set; }
         public DateTime Date { get; set; } = DateTime.UtcNow;
+        public ConnectionRequestStatus Status { get; set; } = ConnectionRequestStatus.Pending;
     }
 }

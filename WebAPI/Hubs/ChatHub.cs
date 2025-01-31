@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Domain.Models.ChatModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Thread = Domain.Models.ChatModels.Thread;
 
 namespace WebAPI.Hubs;
 
@@ -36,13 +37,6 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
     
-    // public async Task SendMessageToGroup(GroupChat Chat)
-    // {
-    //     var SavedChat = await _chatRepository.AddChatToGroupAsync(Chat);
-    //     await Clients.All.SendAsync("ReceiveGroupMessages", SavedChat);
-    // }
-
-    
     public async Task AddAvailableUserAsync(AvailableUser model)
     {
         model.ConnectionId = Context.ConnectionId;
@@ -57,9 +51,8 @@ public class ChatHub : Hub
         var availableUsers = await _chatRepository.GetAvailableUsersAsync();
         await Clients.All.SendAsync("NotifyAllClients", availableUsers);
     }
-
     
-    public async Task AddIndividualChat(IndividualChat model)
+    public async Task AddIndividualChat(Thread model)
     {
         await _chatRepository.AddIndividualChatAsync(model);
 
@@ -87,4 +80,10 @@ public class ChatHub : Hub
     }
 
     public async Task<List<AvailableUserDto>> GetUsers() => await _chatRepository.GetAvailableUsersAsync();
+
+    public async Task SendThreadRequest(ThreadRequest model)
+    {
+        await _chatRepository.SendThreadRequestAsync(model);
+        await Clients.User(model.ReceiverId).SendAsync("ReceiveThreadRequest", model);
+    }
 }

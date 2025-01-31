@@ -71,12 +71,9 @@
       
       [CascadingParameter] 
       public Task<AuthenticationState> authenticationState { get; set; }
-      
-      public List<AvailableUserDto> AvailableUsers { get; set; } = [];
-      public List<GroupChatDto> GroupChats {get; set;} = [];
-      private GroupChat GroupChat = new();
       private HubConnection? _hubConnection;
       private AvailableUserDto SelectedContact;
+      public List<AvailableUserDto> AvailableUsers { get; set; } = [];
 
       protected override async Task OnInitializedAsync()
       {
@@ -155,4 +152,5 @@
           _SelectedUserState.ReceiverId = contact.UserId;
       }
      
+    
 }                    
