@@ -1,22 +1,28 @@
 ﻿@page "/login"
+@using FluentValidation
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IAccountRepository _account
 @inject NavigationManager _navigation
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IValidator<LoginDto> Validator
+@using Blazored.FluentValidation
 
 <div class="container-fluid">
     <EditForm class="form" Model="@User" OnValidSubmit="HandleLogin">
         <DataAnnotationsValidator/>
-        <ValidationSummary/>
+        <FluentValidationValidator Validator="Validator" />
+        
         <img src="img/aoulogo.png" alt="Welcome Image" class="welcome-image mb-3"/>
         <h4 class="text-center">Welcome, Back!</h4>
         <div class="mb-3 mt-5">
             <label for="email" class="form-label">Email address</label>
-            <InputText type="email" class="form-control" id="email" @bind-Value="email"/>
+            <InputText type="email" class="form-control" id="email" @bind-Value="@User.Email"/>
+            <ValidationMessage For="@(() => @User.Email)" />
         </div>
         <div class="mb-3 mt-5">
             <label for="password" class="form-label">Password</label>
-            <InputText type="password" class="form-control" id="password" @bind-Value="password"/>
+            <InputText type="password" class="form-control" id="password" @bind-Value="@User.Password"/>
+            <ValidationMessage For="@(() => @User.Password)" />
         </div>
         <button type="submit" class="btn btn-primary mt-4">Login</button>
     </EditForm>
@@ -25,13 +31,9 @@
 
 @code {
     private LoginDto User { get; set; } = new LoginDto();
-    private string email;
-    private string password;
     
      async Task HandleLogin()
      {
-         User.Email = email;
-         User.Password = password;
         var response = await _account.LoginAccountAsync(User);
         
         if(response.Flag)

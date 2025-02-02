@@ -1,8 +1,11 @@
+using Application.DTOs.Request.Account;
 using Application.Extension;
 using Application.Extensions;
 using Application.Interfaces;
 using Application.Services;
+using Application.Validators.Account;
 using Blazored.LocalStorage;
+using FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -21,6 +24,8 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationProv
 builder.Services.AddScoped<AvailableUserState>();
 builder.Services.AddScoped<SelectedUserState>();
 builder.Services.AddTransient<CustomHttpHandler>();
+builder.Services.AddTransient<IValidator<LoginDto>, LoginDtoValidator>();
+
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddBlazoredLocalStorage();

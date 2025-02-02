@@ -1,4 +1,5 @@
 using System.Text;
+using Application.DTOs.Request.Account;
 using Application.Extensions;
 using Application.Interfaces;
 using Application.Validators.Account;
@@ -22,7 +23,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAccountDtoValidator>();
-
+builder.Services.AddTransient<IValidator<LoginDto>, LoginDtoValidator>();
+    
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
