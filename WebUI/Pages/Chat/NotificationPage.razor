@@ -1,5 +1,139 @@
-<h3>NotificationPage</h3>
+@using Application.DTOs.Request.Entities
+@using Application.Extension
+@using Domain.Models.ChatModels
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.SignalR.Client
+@inject LocalStorageService LocalStorageService
+@inject NavigationManager _navigation
+@inject AvailableUserState state
+@inject ReceiverChangeState _Receiver
+
+<AuthorizeView>
+    @* @foreach (var contact in AvailableUsers) *@
+    @* { *@
+    @*     var currentUser = contact; *@
+    @*     @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value) *@
+    @*     { *@
+    @*         @if (UserProfilePhoto is null) *@
+    @*         { *@
+    @*             <div> *@
+    @*                 <div class="contact-body"> *@
+    @*                     <div class="circle-profile">@contact.Fullname[0]</div> *@
+    @*                     <div class="contact-info"> *@
+    @*                         <div class="contact-user-name"> *@
+    @*                             <a>@contact.Fullname</a> *@
+    @*                         </div> *@
+    @* *@
+    @*                         <div class="last-message"> *@
+    @*                             Hey, Ready for tonight? *@
+    @*                         </div> *@
+    @*                     </div> *@
+    @*                 </div> *@
+    @*             </div> *@
+    @*         } *@
+    @*     } *@
+    @* } *@
+
+    @foreach (var contact in ThreadRequests)
+    {
+    
+    @if (UserProfilePhoto is null)
+    {
+        <div>
+            <div class="contact-body">
+                <div class="circle-profile"></div>
+                <div class="contact-info">
+                    <div class="contact-user-name">
+                        <a>@contact.SenderId</a>
+                    </div>
+
+                    <div class="last-message">
+                        Hey, Ready for tonight?
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    }
+    
+
+    <div class="new-contact">
+        <div class="circle"><i class="fa-solid fa-user-plus" style="color: #ffffff;"></i></div>
+    </div>
+</AuthorizeView>
 
 @code {
+
+    private string _senderId = string.Empty;
+    private string _receiverId = string.Empty;
+    private string _statusMessage = string.Empty;
+    private HubConnection _hubConnection;
+
+    [Parameter] public string UserProfilePhoto { get; set; }
+
+    [CascadingParameter] public Task<AuthenticationState> authenticationState { get; set; }
+
+    private AvailableUserDto SelectedContact;
+    private List<AvailableUserDto> AvailableUsers { get; set; } = [];
+    private List<ThreadRequest> ThreadRequests { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tokenModel = await LocalStorageService.GetModelFromToken();
+        var accessToken = tokenModel?.Token;
+        var httpClient = new HttpClient();
+        
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            _navigation.NavigateTo("/login");
+            return;
+        }
+
+        _receiverId = await LocalStorageService.GetUserIdFromToken();
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7201/chathub", 
+                options => 
+                { options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken); })
+            .WithAutomaticReconnect()
+            .Build();
+
+        _hubConnection.On<ThreadRequest>("ReceiveThreadRequest", async (request) =>
+        {
+            try
+            {
+                ThreadRequests = await httpClient.GetFromJsonAsync<List<ThreadRequest>>(
+                    $"https://localhost:7201/api/chats/thread/receive/?ReceiverId={_receiverId}");
+
+                Console.WriteLine($"Received thread request from {request.SenderId}");
+
+                await InvokeAsync(StateHasChanged); 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching thread requests: {ex.Message}");
+            }
+        });
+        await _hubConnection.StartAsync();
+        await GetCurrentUserAuthentication();
+
+        
+        
+        ThreadRequests = await httpClient.GetFromJsonAsync<List<ThreadRequest>>(
+            $"https://localhost:7201/api/chats/thread/receive/?ReceiverId={_receiverId}");
+        
+    }
     
-}
+    private async Task GetCurrentUserAuthentication()
+    {
+        var user = (await authenticationState).User;
+        if (user.Identity!.IsAuthenticated == true)
+        {
+            await _hubConnection!.SendAsync("AddAvailableUserAsync", new AvailableUser()
+            {
+                UserId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value
+            });
+        }
+    }
+
+  }

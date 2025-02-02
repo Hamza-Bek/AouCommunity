@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application.DTOs.Request.Account;
@@ -64,16 +65,26 @@ namespace Application.Extension
             var tokenModel = await GetModelFromToken();
             if (string.IsNullOrWhiteSpace(tokenModel?.Token))
             {
+                Console.WriteLine("Token is null or empty.");
                 return null;
             }
 
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(tokenModel.Token);
 
-            // Extract the "sub" or "userId" claim, depending on your JWT structure
-            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "userId")?.Value;
+            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                Console.WriteLine("⚠️ User ID not found in token!");
+            }
+            else
+            {
+                Console.WriteLine($"🔹 Extracted User ID: {userId}");
+            }
 
             return userId;
         }
+
     }
 }

@@ -74,7 +74,6 @@ public class ChatHub : Hub
             Date = model.Date
         };
         
-        //THE SERVER OR CLIENT SIDE CAN NOT GET OR DEFINE THE USER ID (ReceiverId)
         await Clients.User(model.ReceiverId!).SendAsync("ReceiveIndividualMessage", prepareIndividualChat);
         
     }
@@ -85,5 +84,11 @@ public class ChatHub : Hub
     {
         await _chatRepository.SendThreadRequestAsync(model);
         await Clients.User(model.ReceiverId!).SendAsync("ReceiveThreadRequest", model);
+    }
+    
+    public async Task ReceiveThreadRequest(string ReceiverId)
+    {
+        var result = await _chatRepository.GetThreadRequestsAsync(ReceiverId);
+        await Clients.User(ReceiverId).SendAsync("ReceiveThreadRequest", result);
     }
 }

@@ -1,0 +1,156 @@
+
+.contact-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    gap: .5rem;
+}
+
+.search-bar {
+    width: 100%;
+    height: 2.5rem;
+    border-radius: 50px;
+    background-color: #E8E8E8;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.3rem 0.5rem;
+    border-radius: 50px;
+    border: none;
+    background-color: #E8E8E8;
+    outline: none;
+    font-size: 1rem;
+    margin: 1rem;
+}
+
+.contact-header i  {
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.contact-body {
+    display: flex;
+    align-items: center;
+    margin: .25rem;
+    border-bottom: #E8E8E8 1px solid;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    margin: 0.25rem;
+}
+
+.contact-body .contact-user-name{
+    padding-top: 1rem;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+    opacity: 0.8;
+    z-index: 0;
+}
+
+.contact-body .last-message {
+    display: flex;
+    font-size: 14px;
+    color: #777;
+    opacity: 0.5;
+}
+
+.contact-profile-photo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    z-index: 1;
+    margin: 2.5%;
+    z-index: 1;
+}
+
+
+.circle-profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 100%;
+    background: #0a53be;
+    color: white;
+    z-index: 1;
+    margin: 2.5%;
+    z-index: 1;
+}
+
+.contact-container.open {
+    display: block;
+    width: 100%;
+}
+
+.new-contact {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background:#012e50;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 10px;
+    right: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 1100px) {
+
+    .contact-container {
+        display: none;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+
+    .contact-body {
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+
+    .contact-body .contact-user-name {
+        font-size: 14px;
+    }
+
+    .contact-profile-photo {
+        width: 35px;
+        height: 35px;
+        margin: 0;
+    }
+
+    .search-bar input {
+        font-size: 1rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+
+}
+
+/* Small mobile responsiveness */
+@media (max-width: 480px) {
+
+
+
+    .contact-container {
+        display: none;
+    }
+}

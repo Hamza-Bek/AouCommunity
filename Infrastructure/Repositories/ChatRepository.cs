@@ -79,6 +79,14 @@ namespace Infrastructure.Repositories
             return list;
         }
 
+        public async Task<List<ThreadRequest>> GetThreadRequestsAsync(string ReceiverId)
+        {
+            var ThreadRequest = await _context.ThreadRequests
+                .Where(r => r.ReceiverId == ReceiverId).ToListAsync();
+
+            return ThreadRequest;
+        }
+
         public async Task<List<AvailableUserDto>> RemoveUserAsync(string userId)
         {
             var user = await _context.AvailableUsers.FirstOrDefaultAsync(u => u.UserId == userId);

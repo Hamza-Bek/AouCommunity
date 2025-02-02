@@ -29,13 +29,22 @@ namespace WebAPI.Controllers
 
         [HttpPost("individual")]
         public async Task<IActionResult> GetIndividualChatsAsync(RequestChatDto model) =>
-            Ok(await _chatRepository.GetIndividualChatsAsync(model));
-
+            Ok(await _chatRepository.GetIndividualChatsAsync(model));      
+        
         [HttpPost("thread/request")]
         public async Task<IActionResult> RequestThreadAsync(ThreadRequest model)
         {
             await _chatRepository.SendThreadRequestAsync(model);
             return NoContent();
+        }        
+        
+        [HttpGet("thread/receive/")]
+        public async Task<IActionResult> ReceiveThreadRequestAsync([FromQuery]string ReceiverId)
+        {
+            var result = await _chatRepository.GetThreadRequestsAsync(ReceiverId);
+            return Ok(result);
         }
+            
+       
     }
 }

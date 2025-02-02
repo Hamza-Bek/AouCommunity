@@ -36,6 +36,11 @@ namespace Application.Services
             throw new NotImplementedException();
         }
 
+        public Task<List<ThreadRequest>> GetThreadRequestsAsync(string ReceiverId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<List<GroupChatDto>> GetGroupChatsAsync()
         {
             throw new NotImplementedException();
