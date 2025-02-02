@@ -24,7 +24,7 @@ body::before {
 .container-fluid {
     background: white;
     width: fit-content;
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 8px;
 }
 

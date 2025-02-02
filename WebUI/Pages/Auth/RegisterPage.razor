@@ -3,73 +3,50 @@
 @inject IAccountRepository AccountService
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IValidator<CreateAccountDto> Validator
 
 <div class="container-fluid">
     <EditForm class="form" Model="@NewUser" OnValidSubmit="HandleRegistration">
+        <DataAnnotationsValidator/>
+        <FluentValidationValidator Validator="Validator" />
         <div class="container-fluid">
-            <img src="img/aoulogo.png" alt="Welcome Image" class="welcome-image mb-3" />
+            <img src="img/aoulogo.png" alt="Welcome Image" class="welcome-image mb-3"/>
             <h4 class="text-center">Create an Account</h4>
 
-            <div class="mb-3 mt-5">
+            <div class="mb-3 mt-2">
                 <label for="username" class="form-label">Username</label>
-                <InputText type="text" class="form-control" id="username" @bind-Value="username" />
-                @if (!string.IsNullOrEmpty(usernameError))
-                {
-                    <small class="text-danger">@usernameError</small>
-                }
+                <InputText type="text" class="form-control" id="username" @bind-Value="@NewUser.Name"/>
+                <ValidationMessage For="@(() => @NewUser.Name)"/>
             </div>
 
-            <div class="mb-3 mt-5">
+            <div class="mb-3 mt-2">
                 <label for="email" class="form-label">Email</label>
-                <InputText type="email" class="form-control" id="email" @bind-Value="email" />
-                @if (!string.IsNullOrEmpty(emailError))
-                {
-                    <small class="text-danger">@emailError</small>
-                }
+                <InputText type="email" class="form-control" id="email" @bind-Value="@NewUser.Email"/>
+                <ValidationMessage For="@(()=>@NewUser.Email)" />
             </div>
 
-            <div class="mb-3 mt-5">
+            <div class="mb-3 mt-2">
                 <label for="password" class="form-label">Password</label>
-                <InputText type="password" class="form-control" id="password" @bind-Value="password" />
-                @if (!string.IsNullOrEmpty(passwordError))
-                {
-                    <small class="text-danger">@passwordError</small>
-                }
+                <InputText type="password" class="form-control" id="password" @bind-Value="@NewUser.Password"/>
+                <ValidationMessage For="@(()=>@NewUser.Password)"/>
             </div>
 
-            <div class="mb-3 mt-5">
+            <div class="mb-3 mt-2">
                 <label for="confirmPassword" class="form-label">Confirm Password</label>
-                <InputText type="password" class="form-control" id="confirmPassword" @bind-Value="confirmPassword" />
-                @if (!string.IsNullOrEmpty(confirmPasswordError))
-                {
-                    <small class="text-danger">@confirmPasswordError</small>
-                }
-            </div>
+                <InputText type="password" class="form-control" id="confirmPassword" @bind-Value="@NewUser.ConfirmPassword"/>
+                <ValidationMessage For="@(()=>@NewUser.ConfirmPassword)"/>
 
-            <button type="submit" class="btn btn-primary mt-4">Register</button>
-        </div>
-        </EditForm>
+                <button type="submit" class="btn btn-primary mt-4">Register</button>
+            </div>
+            </div>
+    </EditForm>
 </div>
 
 @code {
-    private CreateAccountDto NewUser { get; set; } = new CreateAccountDto();
-    private string username;
-    private string email;
-    private string password;
-    private string confirmPassword;
-    
-    // Error messages
-    private string usernameError;
-    private string emailError;
-    private string passwordError;
-    private string confirmPasswordError;
+    private CreateAccountDto NewUser { get; set; } = new();
     
     private async Task HandleRegistration()
     {
-        NewUser.Name = username;
-        NewUser.Email = email;
-        NewUser.Password = password;
-        NewUser.ConfirmPassword = confirmPassword;
         
         var result = await AccountService.CreateAccountAsync(NewUser);
 
@@ -88,48 +65,6 @@
             }
             Navigation.NavigateTo("/verify/account");
         }
-        
-        usernameError = emailError = passwordError = confirmPasswordError = string.Empty;
 
-        // Validate form fields
-        bool isValid = true;
-        if (string.IsNullOrWhiteSpace(username))
-        {
-            usernameError = "Username is required.";
-            isValid = false;
-        }
-
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            emailError = "Email is required.";
-            isValid = false;
-        }
-        else if (!email.Contains("@"))
-        {
-            emailError = "Please enter a valid email address.";
-            isValid = false;
-        }
-
-        if (string.IsNullOrWhiteSpace(password))
-        {
-            passwordError = "Password is required.";
-            isValid = false;
-        }
-        else if (password.Length < 6)
-        {
-            passwordError = "Password must be at least 6 characters long.";
-            isValid = false;
-        }
-
-        if (string.IsNullOrWhiteSpace(confirmPassword))
-        {
-            confirmPasswordError = "Please confirm your password.";
-            isValid = false;
-        }
-        else if (password != confirmPassword)
-        {
-            confirmPasswordError = "Passwords do not match.";
-            isValid = false;
-        }
     }
 }

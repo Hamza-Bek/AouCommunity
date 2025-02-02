@@ -1,11 +1,10 @@
 ﻿@page "/login"
-@using FluentValidation
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IAccountRepository _account
 @inject NavigationManager _navigation
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IValidator<LoginDto> Validator
-@using Blazored.FluentValidation
+
 
 <div class="container-fluid">
     <EditForm class="form" Model="@User" OnValidSubmit="HandleLogin">

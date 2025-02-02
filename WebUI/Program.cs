@@ -25,6 +25,7 @@ builder.Services.AddScoped<AvailableUserState>();
 builder.Services.AddScoped<SelectedUserState>();
 builder.Services.AddTransient<CustomHttpHandler>();
 builder.Services.AddTransient<IValidator<LoginDto>, LoginDtoValidator>();
+builder.Services.AddTransient<IValidator<CreateAccountDto>, CreateAccountDtoValidator>();
 
 
 builder.Services.AddCascadingAuthenticationState();
