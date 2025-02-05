@@ -36,7 +36,7 @@ namespace Application.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<ThreadRequest>> GetThreadRequestsAsync(string ReceiverId)
+        public Task<List<ThreadRequestDto>> GetThreadRequestsAsync(string ReceiverId)
         {
             throw new NotImplementedException();
         }

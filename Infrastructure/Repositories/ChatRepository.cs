@@ -79,12 +79,26 @@ namespace Infrastructure.Repositories
             return list;
         }
 
-        public async Task<List<ThreadRequest>> GetThreadRequestsAsync(string ReceiverId)
+        public async Task<List<ThreadRequestDto>> GetThreadRequestsAsync(string ReceiverId)
         {
+            var list = new List<ThreadRequestDto>();
             var ThreadRequest = await _context.ThreadRequests
                 .Where(r => r.ReceiverId == ReceiverId).ToListAsync();
 
-            return ThreadRequest;
+            foreach (var u in ThreadRequest)
+            {
+                var userIdentity = await _userManager.FindByIdAsync(u.SenderId);
+                list.Add(new ThreadRequestDto()
+                {
+                    Id = u.Id,
+                    SenderId = u.SenderId,
+                    ReceiverId = u.ReceiverId,
+                    Status = ConnectionRequestStatus.Pending,
+                    SentDate = DateTime.UtcNow,
+                    SenderFullname = userIdentity.UserName
+                });
+            }
+            return list;
         }
 
         public async Task<List<AvailableUserDto>> RemoveUserAsync(string userId)

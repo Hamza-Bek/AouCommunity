@@ -13,7 +13,7 @@ namespace Application.Interfaces
     {
         Task<List<AvailableUserDto>> AddAvailableUserAsync(AvailableUser model);
         Task<List<AvailableUserDto>> GetAvailableUsersAsync();
-        Task<List<ThreadRequest>> GetThreadRequestsAsync(string ReceiverId);
+        Task<List<ThreadRequestDto>> GetThreadRequestsAsync(string ReceiverId);
         Task<List<IndividualChatDto>> GetIndividualChatsAsync(RequestChatDto model);
         Task<List<AvailableUserDto>> RemoveUserAsync(string userId);
         Task AddIndividualChatAsync(Thread model);

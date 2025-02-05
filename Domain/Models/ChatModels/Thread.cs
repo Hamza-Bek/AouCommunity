@@ -13,6 +13,7 @@ namespace Domain.Models.ChatModels
         public string? SenderId { get; set; }
         public string? ReceiverId { get; set; }
         public string? Message { get; set; }
+        
         public ConnectionRequestStatus Status{ get; set; } = ConnectionRequestStatus.Pending;
         public DateTime Date { get; set; }
     }
