@@ -67,5 +67,15 @@ namespace Application.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task AcceptThreadRequestAsync(int threadRequestId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RejectThreadRequestAsync(int threadRequestId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -44,6 +44,20 @@ namespace WebAPI.Controllers
             var result = await _chatRepository.GetThreadRequestsAsync(ReceiverId);
             return Ok(result);
         }
+        
+        [HttpPost("thread/accept")]
+        public async Task<IActionResult> AcceptThreadRequestAsync([FromQuery]int threadRequestId)
+        {
+            await _chatRepository.AcceptThreadRequestAsync(threadRequestId);
+            return NoContent();
+        }
+        
+        [HttpPost("thread/reject")]
+        public async Task<IActionResult> RejectThreadRequestAsync([FromQuery]int threadRequestId)
+        {
+            await _chatRepository.RejectThreadRequestAsync(threadRequestId);
+            return NoContent();
+        }
             
        
     }

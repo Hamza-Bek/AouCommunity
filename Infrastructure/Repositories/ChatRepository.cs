@@ -181,5 +181,25 @@ namespace Infrastructure.Repositories
             await _context.ThreadRequests.AddAsync(request);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AcceptThreadRequestAsync(int threadRequestId)
+        {
+            var threadRequest = await _context.ThreadRequests.FindAsync(threadRequestId);
+            if (threadRequest is not null)
+            {
+                threadRequest.Status = ConnectionRequestStatus.Accepted;
+                await _context.SaveChangesAsync();
+            }               
+        }
+
+        public async Task RejectThreadRequestAsync(int threadRequestId)
+        {
+            var threadRequest = await _context.ThreadRequests.FindAsync(threadRequestId);
+            if (threadRequest is not null)
+            {
+                threadRequest.Status = ConnectionRequestStatus.Rejected;
+                await _context.SaveChangesAsync();
+            }   
+        }
     }
 }
