@@ -83,7 +83,9 @@ namespace Infrastructure.Repositories
         {
             var list = new List<ThreadRequestDto>();
             var ThreadRequest = await _context.ThreadRequests
-                .Where(r => r.ReceiverId == ReceiverId).ToListAsync();
+                .Where(r => r.ReceiverId == ReceiverId)
+                .Where(s => s.Status == ConnectionRequestStatus.Pending)
+                .ToListAsync();
 
             foreach (var u in ThreadRequest)
             {

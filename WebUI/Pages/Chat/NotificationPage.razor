@@ -9,31 +9,6 @@
 @inject ReceiverChangeState _Receiver
 
 <AuthorizeView>
-    @* @foreach (var contact in AvailableUsers) *@
-    @* { *@
-    @*     var currentUser = contact; *@
-    @*     @if (currentUser.UserId != context.User.Claims.FirstOrDefault(i => i.Type == ClaimTypes.NameIdentifier)!.Value) *@
-    @*     { *@
-    @*         @if (UserProfilePhoto is null) *@
-    @*         { *@
-    @*             <div> *@
-    @*                 <div class="contact-body"> *@
-    @*                     <div class="circle-profile">@contact.Fullname[0]</div> *@
-    @*                     <div class="contact-info"> *@
-    @*                         <div class="contact-user-name"> *@
-    @*                             <a>@contact.Fullname</a> *@
-    @*                         </div> *@
-    @* *@
-    @*                         <div class="last-message"> *@
-    @*                             Hey, Ready for tonight? *@
-    @*                         </div> *@
-    @*                     </div> *@
-    @*                 </div> *@
-    @*             </div> *@
-    @*         } *@
-    @*     } *@
-    @* } *@
-
     @foreach (var contact in ThreadRequests)
     {
     
@@ -44,15 +19,19 @@
                 <div class="circle-profile"></div>
                 <div class="contact-info">
                     <div class="contact-user-name">
+                        <a>@_statusMessage</a>
                         <a>@contact.SenderFullname</a>
                     </div>
 
                     <div class="last-message">
-                        @contact.SentDate
+                        @contact.SentDate.ToString("h:mm tt")
                     </div>
-                    
-                    <div class="accept-button" @onclick="() => AcceptThreadRequest(contact)">Accept</div>
-                    <div class="reject-button" @onclick="() => RejectThreadRequest(contact)">Reject</div>
+
+
+                </div>
+                <div class="status-buttons">
+                    <div class="accept-button" @onclick="() => AcceptThreadRequest(contact)"><i class="fa-solid fa-check" style="color: green;"></i></div>
+                    <div class="reject-button" @onclick="() => RejectThreadRequest(contact)"><i class="fa-solid fa-x" style="color: red;"> </i></div>
                 </div>
             </div>
         </div>
@@ -126,7 +105,7 @@
 
     private async Task AcceptThreadRequest(ThreadRequestDto model)
     {
-        Console.WriteLine("the click has been triggered");
+        _statusMessage = "Congrats! You are now connected with ";
         await _hubConnection.SendAsync("AcceptThreadRequest", model);
     }
 

@@ -112,6 +112,29 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.status-buttons {
+    margin-left: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
+    padding: 1rem;
+}
+
+.accept-button {
+    padding: 0 .3rem;
+    border : 2px green solid;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.reject-button {
+    padding: 0 .3rem;
+    border : 2px red solid;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
 @media (max-width: 1100px) {
 
     .contact-container {
