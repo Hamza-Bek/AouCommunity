@@ -48,8 +48,11 @@
                     </div>
 
                     <div class="last-message">
-                        Hey, Ready for tonight?
+                        @contact.SentDate
                     </div>
+                    
+                    <div class="accept-button" @onclick="() => AcceptThreadRequest(contact.Id)">Accept</div>
+                    <div class="reject-button" @onclick="() => RejectThreadRequest(contact.Id)">Reject</div>
                 </div>
             </div>
         </div>
@@ -67,15 +70,14 @@
     private string _senderId = string.Empty;
     private string _receiverId = string.Empty;
     private string _statusMessage = string.Empty;
-    private HubConnection _hubConnection;
+    private HubConnection? _hubConnection;
 
     [Parameter] public string UserProfilePhoto { get; set; }
 
     [CascadingParameter] public Task<AuthenticationState> authenticationState { get; set; }
-
-    private AvailableUserDto SelectedContact;
+    
     private List<AvailableUserDto> AvailableUsers { get; set; } = [];
-    private List<ThreadRequestDto> ThreadRequests { get; set; } = [];
+    private List<ThreadRequestDto>? ThreadRequests { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,12 +118,21 @@
         });
         await _hubConnection.StartAsync();
         await GetCurrentUserAuthentication();
-
-        
         
         ThreadRequests = await httpClient.GetFromJsonAsync<List<ThreadRequestDto>>(
             $"https://localhost:7201/api/chats/thread/receive/?ReceiverId={_receiverId}");
         
+    }
+
+    private async Task AcceptThreadRequest(int threadRequestId)
+    {
+        Console.WriteLine("the click has been triggered");
+        await _hubConnection.SendAsync("AcceptThreadRequest", threadRequestId); // Here i'm sending the Id , but in the ChatHub it is handling the model itself.
+    }
+
+    private async Task RejectThreadRequest(int threadRequestId)
+    {
+        await _hubConnection.SendAsync("RejectThreadRequest", threadRequestId);
     }
     
     private async Task GetCurrentUserAuthentication()

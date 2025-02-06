@@ -91,4 +91,16 @@ public class ChatHub : Hub
         var result = await _chatRepository.GetThreadRequestsAsync(ReceiverId);
         await Clients.User(ReceiverId).SendAsync("ReceiveThreadRequest", result);
     }
+    
+    public async Task AcceptThreadRequest(ThreadRequest model)
+    {
+        await _chatRepository.AcceptThreadRequestAsync(model.Id);
+        await Clients.User(model.SenderId!).SendAsync("AcceptThreadRequest", model);
+    }
+
+    public async Task RejectThreadRequest(ThreadRequest model)
+    {
+        await _chatRepository.RejectThreadRequestAsync(model.Id);
+        await Clients.User(model.SenderId!).SendAsync("RejectThreadRequest", model);
+    }
 }

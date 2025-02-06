@@ -18,5 +18,7 @@ namespace Application.Interfaces
         Task<List<AvailableUserDto>> RemoveUserAsync(string userId);
         Task AddIndividualChatAsync(Thread model);
         Task SendThreadRequestAsync(ThreadRequest model);
+        Task AcceptThreadRequestAsync(int threadRequestId);
+        Task RejectThreadRequestAsync(int threadRequestId);
     }
 }
