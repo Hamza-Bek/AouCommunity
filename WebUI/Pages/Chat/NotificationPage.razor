@@ -51,8 +51,8 @@
                         @contact.SentDate
                     </div>
                     
-                    <div class="accept-button" @onclick="() => AcceptThreadRequest(contact.Id)">Accept</div>
-                    <div class="reject-button" @onclick="() => RejectThreadRequest(contact.Id)">Reject</div>
+                    <div class="accept-button" @onclick="() => AcceptThreadRequest(contact)">Accept</div>
+                    <div class="reject-button" @onclick="() => RejectThreadRequest(contact)">Reject</div>
                 </div>
             </div>
         </div>
@@ -124,15 +124,15 @@
         
     }
 
-    private async Task AcceptThreadRequest(int threadRequestId)
+    private async Task AcceptThreadRequest(ThreadRequestDto model)
     {
         Console.WriteLine("the click has been triggered");
-        await _hubConnection.SendAsync("AcceptThreadRequest", threadRequestId); // Here i'm sending the Id , but in the ChatHub it is handling the model itself.
+        await _hubConnection.SendAsync("AcceptThreadRequest", model);
     }
 
-    private async Task RejectThreadRequest(int threadRequestId)
+    private async Task RejectThreadRequest(ThreadRequestDto model)
     {
-        await _hubConnection.SendAsync("RejectThreadRequest", threadRequestId);
+        await _hubConnection.SendAsync("RejectThreadRequest", model);
     }
     
     private async Task GetCurrentUserAuthentication()
