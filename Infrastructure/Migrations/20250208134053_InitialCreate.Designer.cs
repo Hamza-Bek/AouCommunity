@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250129200933_AddThreadRequestTable")]
-    partial class AddThreadRequestTable
+    [Migration("20250208134053_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,7 +149,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("AvailableUsers");
                 });
 
-            modelBuilder.Entity("Domain.Models.ChatModels.Thread", b =>
+            modelBuilder.Entity("Domain.Models.ChatModels.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -157,11 +157,11 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReceiverId")
                         .HasColumnType("nvarchar(max)");
@@ -170,6 +170,28 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("Domain.Models.ChatModels.Thread", b =>
+                {
+                    b.Property<string>("ThreadId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("User1ConnectionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User1Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User2ConnectionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User2Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ThreadId");
 
                     b.ToTable("Threads");
                 });

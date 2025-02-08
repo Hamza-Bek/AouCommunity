@@ -75,10 +75,10 @@
     </div>
     </AuthorizeView>
 
-        <EditForm Model="ThreadModel" OnValidSubmit="SendIndividualChat">
+        <EditForm Model="MessageModel" OnValidSubmit="SendIndividualChat">
         <div class="chat-footer">
         <div class="message-container">
-        <InputText @bind-Value="ThreadModel.Message" placeholder="send message.." class="input-text" CssClass=""/>
+        <InputText @bind-Value="MessageModel.Content" placeholder="send message.." class="input-text" CssClass=""/>
         <button type="submit" class="submit-button">
         <i class="fa-solid fa-play" style="color: #ffffff;"></i>
             </button>
@@ -101,7 +101,7 @@ else
     [Parameter] public string UserProfilePhoto { get; set; }
     [CascadingParameter] public Task<AuthenticationState> authenticationState { get; set; }
     private List<IndividualChatDto> IndividualChats { get; set; } = [];
-    private Thread ThreadModel { get; set; } = new Thread();
+    private Message MessageModel { get; set; } = new ();
     public HubConnection? _hubConnection { get; set; }
     private string _message;
     
@@ -199,24 +199,24 @@ else
     {
         try
         {
-            if (!string.IsNullOrEmpty(ThreadModel.Message))
+            if (!string.IsNullOrEmpty(MessageModel.Content))
             {
-                ThreadModel.ReceiverId = state.ReceiverId;
-                ThreadModel.SenderId =
+                MessageModel.ReceiverId = state.ReceiverId;
+                MessageModel.SenderId =
                     ((await authenticationState).User).Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
-                await _hubConnection!.SendAsync("AddIndividualChat", ThreadModel);
+                await _hubConnection!.SendAsync("AddIndividualChat", MessageModel);
 
                 var data = new IndividualChatDto()
                 {
-                    SenderId = ThreadModel.SenderId,
-                    ReceiverId = ThreadModel.ReceiverId,
-                    Message = ThreadModel.Message,
-                    Date = ThreadModel.Date,
+                    SenderId = MessageModel.SenderId,
+                    ReceiverId = MessageModel.ReceiverId,
+                    Message = MessageModel.Content,
+                    Date = MessageModel.Date,
                     SenderName = (await authenticationState).User.Identity!.Name,
                     ReceiverName = state.Fullname
                 };
                 IndividualChats.Add(data);
-                ThreadModel = new();
+                MessageModel = new();
             }
         }
         catch

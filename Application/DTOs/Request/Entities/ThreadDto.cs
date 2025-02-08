@@ -1,6 +1,8 @@
-namespace Domain.Models.ChatModels;
+using Domain.Models.ChatModels;
 
-public class Thread
+namespace Application.DTOs.Request.Entities;
+
+public class ThreadDto
 {
     public string? ThreadId { get; set; }
     public string? User1ConnectionId { get; set; }

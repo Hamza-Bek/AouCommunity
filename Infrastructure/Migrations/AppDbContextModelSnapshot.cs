@@ -146,7 +146,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("AvailableUsers");
                 });
 
-            modelBuilder.Entity("Domain.Models.ChatModels.Thread", b =>
+            modelBuilder.Entity("Domain.Models.ChatModels.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,11 +154,11 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReceiverId")
                         .HasColumnType("nvarchar(max)");
@@ -166,10 +166,29 @@ namespace Infrastructure.Migrations
                     b.Property<string>("SenderId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("Domain.Models.ChatModels.Thread", b =>
+                {
+                    b.Property<string>("ThreadId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("User1ConnectionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User1Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User2ConnectionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("User2Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ThreadId");
 
                     b.ToTable("Threads");
                 });

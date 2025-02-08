@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Domain.Models.ChatModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Thread = Domain.Models.ChatModels.Thread;
 
 namespace WebAPI.Controllers
 {
@@ -58,7 +59,26 @@ namespace WebAPI.Controllers
             await _chatRepository.RejectThreadRequestAsync(threadRequestId);
             return NoContent();
         }
+        [HttpPost("thread/add/thread")]
+        public async Task<IActionResult> AddThreadChatAsync(ThreadDto model)
+        {
+            try
+            {
+                var response = await _chatRepository.CreateThreadChatAsync(model);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
             
+        [HttpGet("thread/get/threads")]
+        public async Task<IActionResult> GetThreadChatsAsync([FromQuery]string userId)
+        {
+            var response = await _chatRepository.GetThreadChatsAsync(userId);
+            return Ok(response);
+        }
        
     }
 }

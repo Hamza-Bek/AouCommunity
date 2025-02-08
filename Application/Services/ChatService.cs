@@ -8,7 +8,7 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Thread = Domain.Models.ChatModels.Thread;
+using Application.DTOs.Response;
 
 namespace Application.Services
 {
@@ -26,7 +26,7 @@ namespace Application.Services
             throw new NotImplementedException();
         }
 
-        public Task AddIndividualChatAsync(Thread model)
+        public Task AddIndividualChatAsync(Message model)
         {
             throw new NotImplementedException();
         }
@@ -74,6 +74,16 @@ namespace Application.Services
         }
 
         public Task RejectThreadRequestAsync(int threadRequestId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<GeneralResponse> CreateThreadChatAsync(ThreadDto model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<ThreadDto>> GetThreadChatsAsync(string userId)
         {
             throw new NotImplementedException();
         }

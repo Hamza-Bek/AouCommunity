@@ -73,7 +73,9 @@
       public Task<AuthenticationState> authenticationState { get; set; }
       private HubConnection? _hubConnection;
       private AvailableUserDto SelectedContact;
-      public List<AvailableUserDto> AvailableUsers { get; set; } = [];
+      
+      private List<AvailableUserDto> AvailableUsers { get; set; } = [];
+      private List<ThreadDto> Threads { get; set; } = []; 
 
       protected override async Task OnInitializedAsync()
       {
@@ -98,12 +100,19 @@
               AvailableUsers = users;
               InvokeAsync(() => StateHasChanged());
           });
+          
+          _hubConnection.On<List<ThreadDto>>("NotifyAllClients", (users) =>
+          {
+              Threads = users;
+              InvokeAsync(() => StateHasChanged());
+          });
 
           await _hubConnection.StartAsync();
           await GetCurrentUserAuthentication();
 
           var httpClient = new HttpClient();
           AvailableUsers = await httpClient.GetFromJsonAsync<List<AvailableUserDto>>("https://localhost:7201/api/chats/users");
+          //Threads = await httpClient.GetFromJsonAsync<List<AvailableUserDto>>("https://localhost:7201/api/chats/users");
       }
       
       private async Task GetCurrentUserAuthentication()
@@ -115,14 +124,6 @@
               {
                   UserId = user.Claims.FirstOrDefault(u => u.Type == ClaimTypes.NameIdentifier)!.Value
               });
-          }
-      }
-      
-      private bool IsConnected
-      {
-          get
-          {
-              return _hubConnection?.State == HubConnectionState.Connected;
           }
       }
 
@@ -151,6 +152,5 @@
           _Receiver.ReceiverId = contact.UserId;
           _SelectedUserState.ReceiverId = contact.UserId;
       }
-     
     
 }                    

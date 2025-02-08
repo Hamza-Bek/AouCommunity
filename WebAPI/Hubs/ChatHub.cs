@@ -3,7 +3,6 @@ using Application.Interfaces;
 using Domain.Models.ChatModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Thread = Domain.Models.ChatModels.Thread;
 
 namespace WebAPI.Hubs;
 
@@ -44,6 +43,12 @@ public class ChatHub : Hub
         var  availableUsers = await _chatRepository.GetAvailableUsersAsync();
         await Clients.All.SendAsync("NotifyAllClients", availableUsers); 
     }
+    
+    // public async Task GetThreadsAsync(string userId)
+    // {
+    //     var result = await _chatRepository.GetThreadsAsync(userId);
+    //     await Clients.User(userId).SendAsync("ReceiveThreads", result);
+    // }
 
     public async Task RemoveUserAsync(string userId)
     {
@@ -52,7 +57,7 @@ public class ChatHub : Hub
         await Clients.All.SendAsync("NotifyAllClients", availableUsers);
     }
     
-    public async Task AddIndividualChat(Thread model)
+    public async Task AddIndividualChat(Message model)
     {
         await _chatRepository.AddIndividualChatAsync(model);
 
@@ -70,7 +75,7 @@ public class ChatHub : Hub
             ReceiverId = model.ReceiverId,
             SenderName = getChats?.Where(c => c.SenderId == model.SenderId).FirstOrDefault()!.SenderName,
             ReceiverName = getChats?.Where(c => c.ReceiverId == model.ReceiverId).FirstOrDefault()!.ReceiverName,
-            Message = model.Message,
+            Message = model.Content,
             Date = model.Date
         };
         
@@ -79,6 +84,9 @@ public class ChatHub : Hub
     }
 
     public async Task<List<AvailableUserDto>> GetUsers() => await _chatRepository.GetAvailableUsersAsync();
+
+
+    #region Thread Request
 
     public async Task SendThreadRequest(ThreadRequest model)
     {
@@ -103,4 +111,7 @@ public class ChatHub : Hub
         await _chatRepository.RejectThreadRequestAsync(model.Id);
         await Clients.User(model.SenderId!).SendAsync("RejectThreadRequest", model);
     }
+
+    #endregion
+  
 }

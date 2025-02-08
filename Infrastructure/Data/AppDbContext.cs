@@ -19,8 +19,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Offer> Offers { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<AvailableUser> AvailableUsers { get; set; }
-    public DbSet<Thread> Threads { get; set; }
+    public DbSet<Message> Messages { get; set; }
     public DbSet<ThreadRequest> ThreadRequests { get; set; }
+    public DbSet<Thread> Threads { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
