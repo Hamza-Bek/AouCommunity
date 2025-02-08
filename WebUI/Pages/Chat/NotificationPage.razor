@@ -7,6 +7,7 @@
 @inject NavigationManager _navigation
 @inject AvailableUserState state
 @inject ReceiverChangeState _Receiver
+@inject NotificationState _NotificationState
 
 <AuthorizeView>
     @foreach (var contact in ThreadRequests)
@@ -62,7 +63,10 @@
     {
         var tokenModel = await LocalStorageService.GetModelFromToken();
         var accessToken = tokenModel?.Token;
+        
         var httpClient = new HttpClient();
+        
+        _NotificationState.OnNotificationCountChange += StateHasChanged;
         
         if (string.IsNullOrEmpty(accessToken))
         {
@@ -86,6 +90,8 @@
                 ThreadRequests = await httpClient.GetFromJsonAsync<List<ThreadRequestDto>>(
                     $"https://localhost:7201/api/chats/thread/receive/?ReceiverId={_receiverId}");
 
+                _NotificationState.UpdateNotificationCount(ThreadRequests.Count);
+                
                 Console.WriteLine($"Received thread request from {request.SenderId}");
 
                 await InvokeAsync(StateHasChanged); 
@@ -101,16 +107,29 @@
         ThreadRequests = await httpClient.GetFromJsonAsync<List<ThreadRequestDto>>(
             $"https://localhost:7201/api/chats/thread/receive/?ReceiverId={_receiverId}");
         
+        _NotificationState.UpdateNotificationCount(ThreadRequests.Count);
+        
     }
 
     private async Task AcceptThreadRequest(ThreadRequestDto model)
     {
-        _statusMessage = "Congrats! You are now connected with ";
+        ThreadRequests?.Remove(model);
+        
+        _NotificationState.UpdateNotificationCount(ThreadRequests?.Count ?? 0);
+        
+        await InvokeAsync(StateHasChanged);
+        
         await _hubConnection.SendAsync("AcceptThreadRequest", model);
     }
 
     private async Task RejectThreadRequest(ThreadRequestDto model)
     {
+        ThreadRequests?.Remove(model);
+        
+        _NotificationState.UpdateNotificationCount(ThreadRequests?.Count ?? 0);
+        
+        await InvokeAsync(StateHasChanged);
+        
         await _hubConnection.SendAsync("RejectThreadRequest", model);
     }
     
@@ -125,5 +144,6 @@
             });
         }
     }
+    
 
   }

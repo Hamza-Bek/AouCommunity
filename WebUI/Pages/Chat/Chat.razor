@@ -1,6 +1,12 @@
 @page "/chat"
-@using Microsoft.IdentityModel.Tokens
+@using Application.DTOs.Request.Entities
+@using Application.Extension
+@using Blazored.LocalStorage
 @inject SelectedUserState _SelectedUserState
+@inject NotificationState _NotificationState
+@inject AppState _AppState
+@inject LocalStorageService LocalStorageService
+@implements IDisposable
 
 <div class="main-container">
     <div class="second-container">
@@ -14,7 +20,9 @@
             <i @onclick='() => ShowPage("newContactsPage")'class="fa-solid fa-users" style="color: #ffffff;"></i>
             <div class="line"></div>
             <i @onclick='() => ShowPage("notificationsPage")' class="fa-solid fa-bell" style="color: #ffffff; position: relative;">
-                <span class="notification-counter">1</span>
+                <span class="notification-counter">
+                 @(_notificationCount > 0 ? _notificationCount.ToString() : "0")
+                </span>
             </i>    
 
         </div>
@@ -54,7 +62,7 @@
 
 @code {
     private string _receiverId;
-
+    private int _notificationCount;
     private string currentPage = "newContactsPage"; // Default page
 
     private void ShowPage(string page)
@@ -62,13 +70,24 @@
         currentPage = page;
     }
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        _SelectedUserState.OnChange += StateHasChanged;
+        await _NotificationState.InitializeAsync(); // Ensure SignalR connection starts globally
+        
+        _NotificationState.OnNotificationCountChange += OnNotificationCountChange;
+        _notificationCount = _NotificationState.NotificationsCount;
+    }
+    
+    private void OnNotificationCountChange()                                                           
+    {
+        _notificationCount = _NotificationState.NotificationsCount;
+        InvokeAsync(StateHasChanged);
     }
 
-    private void Dispose()
+    public void Dispose()
     {
         _SelectedUserState.OnChange -= StateHasChanged;
+        _NotificationState.OnNotificationCountChange -= OnNotificationCountChange;
     }
+
 }
